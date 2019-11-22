@@ -9,8 +9,47 @@ export const asyncRouterMap = [
     name: 'index',
     component: BasicLayout,
     meta: { title: '首页' },
-    redirect: '/dashboard/workplace',
+    redirect: '/home',
     children: [
+      {
+        path: '/home',
+        name: 'start',
+        component: () => import('@/views/datamgr/Home'),
+        meta: { title: '首页', keepAlive: true, icon: bxAnaalyse, permission: [ 'datamgr' ] }
+      },
+      {
+        path: '/datamgr',
+        name: 'datamgr',
+        redirect: '/datamgr/datesource',
+        component: RouteView,
+        meta: { title: '数据管理', keepAlive: true, icon: bxAnaalyse, permission: [ 'datamgr' ] },
+        children: [
+          {
+            path: '/datamgr/datesource',
+            name: 'Datasource',
+            component: () => import('@/views/datamgr/Datasource'),
+            meta: { title: '数据源管理', keepAlive: true, permission: [ 'datamgr' ] }
+          },
+          {
+            path: '/datamgr/grant',
+            name: 'Grant',
+            component: () => import('@/views/datamgr/Grant'),
+            meta: { title: '权限管理', keepAlive: true, permission: [ 'datamgr' ] }
+          },
+          {
+            path: '/datamgr/mysql',
+            name: 'Mysql',
+            component: () => import('@/views/datamgr/Mysql'),
+            meta: { title: 'mysql维护', keepAlive: true, permission: [ 'datamgr' ] }
+          },
+          {
+            path: '/datamgr/redis',
+            name: 'redis',
+            component: () => import('@/views/datamgr/redis'),
+            meta: { title: 'redis维护', keepAlive: true, permission: [ 'datamgr' ] }
+          }
+        ]
+      },
       // dashboard
       {
         path: '/dashboard',

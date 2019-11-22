@@ -14,9 +14,19 @@ import { axios } from '@/utils/request'
  */
 export function login (parameter) {
   return axios({
-    url: '/auth/login',
+    url: '/user/login',
     method: 'post',
-    data: parameter
+    data: parameter,
+    transformRequest: [function (data) {
+      let ret = ''
+      for (const it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    }
   })
 }
 
@@ -31,10 +41,7 @@ export function getSmsCaptcha (parameter) {
 export function getInfo () {
   return axios({
     url: '/user/info',
-    method: 'get',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
+    method: 'get'
   })
 }
 

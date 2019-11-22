@@ -2,17 +2,17 @@
   <div class="footer">
     <div class="links">
       <a
-        href="https://pro.loacg.com/"
+        href="http://admin.pureh2b.com/"
         target="_blank"
-      >Pro 首页</a>
+      >中台系统</a>
       <a
-        href="https://github.com/sendya/ant-design-pro-vue"
+        href="http://msg.pureh2b.com/"
         target="_blank"
-      >
-        <a-icon type="github" />
-      </a>
-      <a href="https://ant.design/">Ant Design</a>
-      <a href="https://vue.ant.design/">Vue Antd</a>
+      >消息中心</a>
+      <a
+        href="http://config.pureh2b.com/"
+        target="_blank"
+      >配置中心</a>
     </div>
     <div class="copyright">
       Copyright
