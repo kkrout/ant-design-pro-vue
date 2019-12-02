@@ -18,35 +18,47 @@ export const asyncRouterMap = [
         meta: { title: '首页', keepAlive: true, icon: bxAnaalyse, permission: [ 'datamgr' ] }
       },
       {
-        path: '/datamgr',
-        name: 'datamgr',
-        redirect: '/datamgr/datesource',
+        path: '/datamgr/datesource',
+        name: 'Datasource',
+        component: () => import('@/views/datamgr/Datasource'),
+        meta: { title: '数据源管理', keepAlive: true, permission: [ 'datamgr' ] }
+      },
+      {
+        path: '/datamgr/grant',
+        name: 'Grant',
+        component: () => import('@/views/datamgr/Grant'),
+        meta: { title: '权限管理', keepAlive: true, permission: [ 'datamgr' ] }
+      },
+      {
+        path: '/datamgr/mysql',
+        name: 'Mysql',
+        component: () => import('@/views/datamgr/Mysql'),
+        meta: { title: 'Mysql维护', keepAlive: true, permission: [ 'datamgr' ] }
+      },
+      {
+        path: '/datamgr/redis',
+        name: 'Redis',
+        component: () => import('@/views/datamgr/Redis'),
+        meta: { title: 'redis维护', keepAlive: true, permission: [ 'datamgr' ] }
+      },
+      {
+        path: '/datamgr/mongo',
+        name: 'Mongo',
+        component: () => import('@/views/datamgr/Mongo'),
+        meta: { title: 'Mongo维护', keepAlive: true, permission: [ 'datamgr' ] }
+      },
+      {
+        path: '/datamgr/log',
+        name: 'Logs',
+        redirect: '/datamgr/log/mysql',
         component: RouteView,
-        meta: { title: '数据管理', keepAlive: true, icon: bxAnaalyse, permission: [ 'datamgr' ] },
+        meta: { title: '日志跟踪', keepAlive: true, icon: bxAnaalyse, permission: [ 'datamgr' ] },
         children: [
           {
-            path: '/datamgr/datesource',
-            name: 'Datasource',
-            component: () => import('@/views/datamgr/Datasource'),
-            meta: { title: '数据源管理', keepAlive: true, permission: [ 'datamgr' ] }
-          },
-          {
-            path: '/datamgr/grant',
-            name: 'Grant',
-            component: () => import('@/views/datamgr/Grant'),
-            meta: { title: '权限管理', keepAlive: true, permission: [ 'datamgr' ] }
-          },
-          {
-            path: '/datamgr/mysql',
-            name: 'Mysql',
-            component: () => import('@/views/datamgr/Mysql'),
-            meta: { title: 'mysql维护', keepAlive: true, permission: [ 'datamgr' ] }
-          },
-          {
-            path: '/datamgr/redis',
-            name: 'redis',
-            component: () => import('@/views/datamgr/redis'),
-            meta: { title: 'redis维护', keepAlive: true, permission: [ 'datamgr' ] }
+            path: 'mysql',
+            name: 'LogMysql',
+            component: () => import('@/views/datamgr/Redis'),
+            meta: { title: 'Mysql日志', keepAlive: true, permission: [ 'datamgr' ] }
           }
         ]
       },
@@ -412,6 +424,20 @@ export const constantRouterMap = [
         path: 'home',
         name: 'TestHome',
         component: () => import('@/views/Home')
+      }
+    ]
+  },
+
+  {
+    path: '/mysql',
+    component: BlankLayout,
+    children: [
+      {
+        path: 'mysql-advance',
+        name: 'MysqlAdvance',
+        component: () => import('@/views/datamgr/MysqlAdvance'),
+        meta: { keepAlive: true, permission: [ 'datamgr' ] },
+        props: true
       }
     ]
   },

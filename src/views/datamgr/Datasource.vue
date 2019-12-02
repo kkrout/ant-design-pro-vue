@@ -1,8 +1,17 @@
 <template>
   <div>
-    <div>
-      <a-button type="default" icon="plus" title="连接" @click="openAdd" />
-    </div>
+    <a-tooltip placement="left" style="position: fixed;right: 20px;top:50%;z-index: 10;">
+      <template slot="title">
+        <span>添加数据源</span>
+      </template>
+      <a-button
+        size="large"
+        shape="circle"
+        type="primary"
+        style="margin-right:5px;"
+        @click="openAdd"
+        icon="plus" ></a-button>
+    </a-tooltip>
     <a-card>
       <a-list size="large" :showPagination="false">
         <a-list-item :key="index" v-for="(item, index) in data">
@@ -22,6 +31,7 @@
       </a-list>
     </a-card>
     <a-drawer
+      title="添加数据源"
       placement="right"
       :width="600"
       :maskClosable="true"
@@ -85,9 +95,9 @@
       <br><br>
       <div style="position: absolute;bottom: 20px;text-align: center;width: calc(100% - 40px);">
         <a-button-group>
-          <a-button type="primary" icon="el-icon-save" @click="save" >保存</a-button>
-          <a-button type="default" icon="el-icon-phone-outline" @click="testConnect(form)" >连接测试</a-button>
-          <a-button type="danger" icon="el-icon-delete" @click="addDrawer=false" >取消</a-button>
+          <a-button type="primary" @click="save" >保存</a-button>
+          <a-button type="default" @click="testConnect(form)" >连接测试</a-button>
+          <a-button type="danger" @click="addDrawer=false" >取消</a-button>
         </a-button-group>
       </div>
     </a-drawer>
@@ -95,14 +105,8 @@
 </template>
 
 <script>
-import { STable, Ellipsis } from '@/components'
-
 export default {
   name: 'Datasource',
-  components: {
-    STable,
-    Ellipsis
-  },
   data () {
     return {
       data: [],

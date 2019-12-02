@@ -25,13 +25,8 @@ export const postJson = (url, params) => {
   return axios({
     method: 'post',
     url: url,
-    data: params,
     transformRequest: [function (data) {
-      let ret = ''
-      for (const it in data) {
-        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-      }
-      return ret
+      return JSON.stringify(params)
     }],
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -53,10 +48,20 @@ export const upload = (url, params) => {
 
 //  GET 方法封装
 export const get = (url, params) => {
+  let ret = ''
+  for (const it in params) {
+    ret += encodeURIComponent(it) + '=' + encodeURIComponent(params[it]) + '&'
+  }
+
+  if (url.indexOf('?') === -1) {
+    url = url + '?' + ret
+  } else {
+    url = url + '&' + ret
+  }
+
   return axios({
     method: 'get',
-    url: url,
-    data: params
+    url: url
   })
 }
 

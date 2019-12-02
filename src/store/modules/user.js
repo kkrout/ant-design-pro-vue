@@ -37,9 +37,10 @@ const user = {
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
-          const token = response.data
-          Vue.ls.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
-          commit('SET_TOKEN', token)
+          const { accessToken } = response.data
+          console.log(accessToken)
+          Vue.ls.set(ACCESS_TOKEN, accessToken, 7 * 24 * 60 * 60 * 1000)
+          commit('SET_TOKEN', accessToken)
           resolve()
         }).catch(error => {
           reject(error)
@@ -51,7 +52,8 @@ const user = {
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
-          const result = initUser(true, response.data)
+          const { isAdmin, loginName } = response.data
+          const result = initUser(isAdmin === 'Y', loginName)
           if (result.role && result.role.permissions.length > 0) {
             const role = result.role
             role.permissions = result.role.permissions
@@ -403,7 +405,16 @@ function initUser (isSupper, loginName) {
     'name': '普通用户',
     'permissions': []
   }
-
+  // 当前的菜单
+  userInfo.role.permissions.push({
+    'roleId': 'admin',
+    'permissionId': 'support',
+    'permissionName': '其他',
+    'actions': '[]',
+    'actionEntitySet': [],
+    'actionList': null,
+    'dataAccess': null
+  })
   // 当前的菜单
   userInfo.role.permissions.push({
     'roleId': 'admin',

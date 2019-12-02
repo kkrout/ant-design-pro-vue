@@ -1,50 +1,221 @@
 <template>
   <div>
+    <a-tooltip placement="left" style="position: fixed;right: 20px;top:50%;z-index: 10;">
+      <template slot="title">
+        <span>添加权限</span>
+      </template>
+      <a-button
+        size="large"
+        shape="circle"
+        type="primary"
+        style="margin-right:5px;"
+        @click="openAdd"
+        icon="plus" ></a-button>
+    </a-tooltip>
     <a-card>
       <a-list size="large" :showPagination="false">
-        <a-list-item :key="index" v-for="(item, index) in data">
-          <a-list-item-meta :description="item.connect">
-            <a slot="title">{{ item.sourceName }}</a>
+        <a-list-item :key="index" v-for="(item, index) in tableData">
+          <a-list-item-meta>
+            <a slot="title">{{ item.loginName }}</a>
+            <div slot="description">
+              <a-tag color="blue" v-for="tag in splitList(item.databases)" :key="tag" >{{ tag }}</a-tag>
+            </div>
           </a-list-item-meta>
           <div slot="actions">
             <template>
-              <Button type="primary" icon="edit" title="编辑" />
+              <a-button size="large" type="primary" icon="edit" title="编辑" @click="toEdit(item)" />
               <a-divider type="vertical"/>
-              <Button type="default" icon="swap" title="连接" />
-              <a-divider type="vertical"/>
-              <Button type="danger" icon="delete" title="删除" />
+              <a-button size="large" type="danger" icon="delete" title="删除" @click="toDelete(item)" />
             </template>
           </div>
         </a-list-item>
       </a-list>
+      <a-drawer
+        title="添加用户权限"
+        placement="right"
+        :width="600"
+        :maskClosable="true"
+        :visible="addDrawer"
+        @close="addDrawer=false"
+      >
+        <a-form ref="form" :model="form" label-width="60px" size="mini" >
+          <a-form-item label="用户：" >
+            <a-input v-model="form.loginNames" :disabled="form.id" placeholder="可分配多个用户，逗号分隔"></a-input>
+          </a-form-item>
+        </a-form>
+        <a-table
+          rowKey="sourceCode"
+          size="small"
+          ref="table"
+          :dataSource="dataSourceData"
+          border
+          :scroll="{y:'calc(100vh - 350px)'}"
+          :columns="dataSourceField"
+          :rowSelection="{selectedRowKeys:selectList,onChange:onSelectChange}"
+          :pagination="false" >
+          <template slot="right" slot-scope="text, record, index">
+            <a-checkbox v-model="grantDatabase[record.sourceCode]" @change="grantBoxChange($event,record)" ></a-checkbox>
+          </template>
+        </a-table>
+        <!--<el-table-->
+        <!--size="mini"-->
+        <!--ref="formTable"-->
+        <!--:data="dataSourceData"-->
+        <!--stripe-->
+        <!--highlight-current-row-->
+        <!--height="calc(100% - 80px)" >-->
+        <!--<el-table-column type="index" align="center" width="70" ></el-table-column>-->
+        <!--<el-table-column type="selection" align="center" width="60" ></el-table-column>-->
+        <!--<el-table-column property="sourceCode" label="数据源标识" min-width="120"></el-table-column>-->
+        <!--<el-table-column property="sourceName" label="数据源名称" min-width="120"></el-table-column>-->
+        <!--<el-table-column property="sourceName" label="权限" min-width="120">-->
+        <!--<template slot-scope="scope">-->
+        <!--<el-checkbox-->
+        <!--v-model="grantDatabase[scope.row.sourceCode]"-->
+        <!--@change="grantBoxChange($event,scope.row)"-->
+        <!--:true-label="1"-->
+        <!--:false-label="0" >修改</el-checkbox>-->
+        <!--</template>-->
+        <!--</el-table-column>-->
+        <!--</el-table>-->
+        <div style="position: absolute;bottom: 20px;text-align: center;width: calc(100% - 40px);">
+          <a-button-group>
+            <a-button type="primary" @click="save" >保存</a-button>
+            <a-button type="danger" @click="addDrawer=false" >取消</a-button>
+          </a-button-group>
+        </div>
+      </a-drawer>
     </a-card>
   </div>
 </template>
 
 <script>
-import { STable, Ellipsis } from '@/components'
-import { Button, Icon } from 'ant-design-vue/es'
-
 export default {
   name: 'Grant',
-  components: {
-    STable,
-    Ellipsis,
-    Button,
-    Icon
-  },
-  data () {
+  data: function () {
     return {
-      data: [{ 'config': '{"database":"promotiondb","password":"Promotuser@#123","address":"192.168.207.8:3306","username":"promotuser"}', 'connect': 'jdbc:mysql://192.168.207.8:3306/promotiondb?characterEncoding=utf-8&useUnicode=true', 'createBy': '', 'createTime': '2019-09-18 14:15:25', 'id': 40, 'sourceCode': 'mps_prod', 'sourceName': 'mps_prod', 'type': 'mysql' }, { 'config': '{"database":"mpcdb","password":"Mpc!@123","address":"192.168.207.204:3306","username":"mpcuser"}', 'connect': 'jdbc:mysql://192.168.207.204:3306/mpcdb?useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&zeroDateTimeBehavior=convertToNull', 'createBy': '', 'createTime': '2019-11-19 14:34:50', 'id': 41, 'sourceCode': 'mdm_prod', 'sourceName': 'mdm_prod', 'type': 'mysql' }, { 'config': '{"database":"ucdb","password":"Uc!@#123","address":"192.168.207.204:3306","username":"ucuser"}', 'connect': 'jdbc:mysql://192.168.207.204:3306/ucdb?characterEncoding=utf-8&useUnicode=true', 'createBy': '', 'createTime': '2019-09-18 14:46:41', 'id': 42, 'sourceCode': 'uc_prod', 'sourceName': 'uc_prod', 'type': 'mysql' }, { 'config': '{"database":"apidb","password":"Api@#123","address":"192.168.207.8:3306","username":"apiuser"}', 'connect': 'jdbc:mysql://192.168.207.8:3306/apidb?useSSL=false&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&tinyInt1isBit=false', 'createBy': '', 'createTime': '2019-10-30 14:27:17', 'id': 43, 'sourceCode': 'api_prod', 'sourceName': 'api_prod', 'type': 'mysql' }, { 'config': '{"database":"stockproddb","password":"Stockuser123","address":"192.168.207.244:3306","username":"stockproddb"}', 'connect': 'jdbc:mysql://192.168.207.244:3306/stockproddb?characterEncoding=utf-8&useUnicode=true', 'createBy': '', 'createTime': '2019-09-28 21:25:10', 'id': 44, 'sourceCode': 'stockdb', 'sourceName': 'stockdb', 'type': 'mysql' }, { 'config': '{"password":"purcotton@2019","address":"192.168.207.200:2379"}', 'connect': 'redis://192.168.207.200:2379', 'createBy': '', 'createTime': '2019-10-11 16:20:48', 'id': 45, 'sourceCode': 'redis_200', 'sourceName': 'redis_200', 'type': 'redis' }, { 'config': '{"database":"paymentdb","password":"Paymentuser@123","address":"192.168.207.217","username":"paymentuser"}', 'connect': 'jdbc:mysql://192.168.207.217/paymentdb?useSSL=false', 'createBy': '', 'createTime': '2019-10-15 09:14:50', 'id': 46, 'sourceCode': 'pay_db', 'sourceName': 'pay_db', 'type': 'mysql' }, { 'config': '{"database":"cmsdb","password":"cmsUser@123","address":"192.168.207.243","username":"cms_user"}', 'connect': 'jdbc:mysql://192.168.207.243/cmsdb?useSSL=false', 'createBy': '', 'createTime': '2019-10-15 09:15:44', 'id': 47, 'sourceCode': 'content_db', 'sourceName': 'content_db', 'type': 'mysql' }, { 'config': '{"database":"teadb","password":"Teauser123","address":"192.168.208.143:3306","username":"teauser"}', 'connect': 'jdbc:mysql://192.168.208.143:3306/teadb?useSSL=false&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull', 'createBy': '', 'createTime': '2019-10-18 16:21:56', 'id': 48, 'sourceCode': 'tea_prod', 'sourceName': 'tea_prod', 'type': 'mysql' }, { 'config': '{"database":"posdb","password":"PosUser@123","address":"192.168.207.18:3306","username":"posuser"}', 'connect': 'jdbc:mysql://192.168.207.18:3306/posdb?useSSL=false&characterEncoding=utf-8&useUnicode=true&allowPublicKeyRetrieval=true', 'createBy': '', 'createTime': '2019-10-21 16:32:11', 'id': 49, 'sourceCode': 'pos_prod', 'sourceName': 'pos_prod', 'type': 'mysql' }, { 'config': '{"database":"distributiondb","password":"Distributionuser123","address":"192.168.207.37:3306","username":"distributionuser"}', 'connect': 'jdbc:mysql://192.168.207.37:3306/distributiondb?useSSL=false', 'createBy': '', 'createTime': '2019-10-21 16:38:56', 'id': 50, 'sourceCode': 'distributiondb', 'sourceName': 'distributiondb', 'type': 'mysql' }, { 'config': '{"database":"trade","password":"Tradeuser123","address":"192.168.206.213:3306","username":"trade"}', 'connect': 'jdbc:mysql://192.168.206.213:3306/trade?characterEncoding=utf-8&useUnicode=true&useSSL=false', 'createBy': '', 'createTime': '2019-10-21 16:41:31', 'id': 51, 'sourceCode': 'trade_prod', 'sourceName': 'trade_prod', 'type': 'mysql' }, { 'config': '{"password":"purcotton@2019","address":"192.168.207.41:6379"}', 'connect': 'redis://192.168.207.41:6379', 'createBy': '', 'createTime': '2019-10-23 15:34:05', 'id': 52, 'sourceCode': 'redis_41', 'sourceName': 'redis_41', 'type': 'redis' }, { 'config': '{"database":"datamaintendb","password":"Datamainten123","address":"192.168.207.8:3306","username":"datamainten"}', 'connect': 'jdbc:mysql://192.168.207.8:3306/datamaintendb?characterEncoding=utf-8&useUnicode=true', 'createBy': '', 'createTime': '2019-10-31 14:44:06', 'id': 53, 'sourceCode': 'owner', 'sourceName': 'owner', 'type': 'mysql' }],
-      selectedRowKeys: [],
-      options: {
-        alert: { show: false, clear: () => { this.selectedRowKeys = [] } },
-        rowSelection: {
-          selectedRowKeys: this.selectedRowKeys,
-          onChange: this.onSelectChange
+      keyword: '',
+      tableData: [],
+      addDrawer: false,
+      dataSourceData: [],
+      dataSourceField: [
+        {
+          title: '数据源标识',
+          dataIndex: 'sourceCode',
+          key: 'sourceCode'
+        },
+        {
+          title: '权限',
+          dataIndex: 'right',
+          scopedSlots: { customRender: 'right' },
+          width: '100px'
         }
-      }
+      ],
+      form: {
+        id: null,
+        loginNames: '',
+        databases: '',
+        grants: ''
+      },
+      grantDatabase: {},
+      selectList: [],
+      selectRowList: []
     }
+  },
+  methods: {
+    query () {
+      this.$getReq('/api/right/list').then(res => {
+        this.tableData = res.data
+      })
+    },
+    onSelectChange (selectList, selectedRows) {
+      this.selectList = selectList
+      this.selectRowList = selectedRows
+    },
+    toEdit (row) {
+      var databases = row.databases.split(',')
+      var grantDatabases = row.grant.split(',')
+      var grants = {}
+      this.selectList = []
+      this.dataSourceData.forEach(item => {
+        if (databases.indexOf(item.sourceCode) != -1) {
+          this.selectList.push(item.sourceCode)
+        }
+        if (grantDatabases.indexOf(item.sourceCode) != -1) {
+          grants[item.sourceCode] = 1
+        } else {
+          grants[item.sourceCode] = 0
+        }
+      })
+      this.grantDatabase = grants
+      this.form.id = row.id
+      this.form.loginNames = row.loginName
+
+      this.addDrawer = true
+    },
+    grantBoxChange (v, row) {
+      if (v) {
+        this.selectList.push(row.sourceCode)
+      }
+    },
+    open () {
+      this.addDrawer = true
+      this.grantDatabase = {}
+      this.form = {
+        id: null,
+        loginNames: '',
+        databases: '',
+        grants: ''
+      }
+      this.$refs.formTable.clearSelection()
+    },
+    loadDatasource () {
+      this.$getReq('/api/datasource/list/').then(res => {
+        this.dataSourceData = res.data
+      })
+    },
+    save () {
+      var databases = []
+      var grants = []
+      this.selectList.forEach(item => {
+        databases.push(item)
+        if (this.grantDatabase[item] == 1) {
+          grants.push(item)
+        }
+      })
+      this.form.databases = databases.join(',')
+      this.form.grants = grants.join(',')
+      this.$post('/api/right/add', this.form).then(res => {
+        this.query()
+        this.addDrawer = false
+      })
+    },
+    toDelete (row) {
+      this.$post('/api/right/delete/' + row.id).then(res => {
+        this.$message.success('删除成功')
+        this.query()
+      })
+    },
+    splitList (str) {
+      return str.split(',')
+    }
+  },
+  /* 组件创建完成事件  */
+  created: function () {
+  },
+  /* 模板编译挂载完成事件 类似小程序onload */
+  mounted: function () {
+    this.loadDatasource()
+    this.query()
+  },
+  /* 组件更新完成事件 */
+  updated: function () {
+  },
+  /*  组件被激活 类似小程序onshow */
+  activated: function () {
+  },
+  /*  组件未被激活 类似小程序ondestroy */
+  deactivated: function () {
   }
 }
 </script>
