@@ -273,6 +273,7 @@ export default {
     toAdvance () {
       if (!this.datasourceCode) {
         this.$message.error('请选择数据库')
+        return
       }
       window.open('/mysql/mysql-advance?sourceCode=' + this.datasourceCode)
       // App.openModule(this.datasourceCode + '高级查询', 'query/mysql-advance.html?' + this.datasourceCode, this.datasourceCode)

@@ -88,6 +88,22 @@
         </li>
       </ul>
     </a-modal>
+    <a-modal title="帮助说明" v-model="sourceModal" width="60%" :footer="null" >
+      <div style="height:calc(100vh - 300px);overflow-y: auto;" >
+        <a-list size="small" :showPagination="false">
+          <a-list-item :key="index" v-for="(item, index) in databaseList">
+            <a-list-item-meta>
+              <a slot="title">{{ item.sourceCode }}</a>
+            </a-list-item-meta>
+            <div slot="actions">
+              <template>
+                <a-button type="primary" icon="check" title="选择" @click="chooseSource(item)" >选择</a-button>
+              </template>
+            </div>
+          </a-list-item>
+        </a-list>
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -122,6 +138,8 @@ export default {
       timeConsuming: '',
       lineWrapping: false,
       resultHeight: 270,
+      databaseList: [],
+      sourceModal: false,
       historyColumns: [
         {
           title: 'index',
@@ -347,6 +365,15 @@ export default {
         paginationOptions: [2000, 5000, 10000]
       }
       this.$refs.excelResult.load(option)
+    },
+    openDatasourceList () {
+      this.sourceModal = true
+      this.$getReq('/api/datasource/list/mysql').then(res => {
+        this.databaseList = res.data
+      })
+    },
+    chooseSource (data) {
+      window.location.href = '?sourceCode=' + data.sourceCode
     }
   },
   /* 组件创建完成事件  */
@@ -358,11 +385,12 @@ export default {
   mounted: function () {
     // 接收数据
     this.datasource = this.$route.query.sourceCode
-    document.title = this.datasource + '高级查询'
     if (!this.datasource) {
-      this.$message.error('没有数据源')
+      this.$message.warning('请选择数据源')
+      this.openDatasourceList()
       return
     }
+    document.title = this.datasource + '高级查询'
     this.$nextTick(() => {
       this.getTableFields()
     })

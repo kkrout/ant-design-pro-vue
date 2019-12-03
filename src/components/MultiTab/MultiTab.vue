@@ -34,7 +34,13 @@ export default {
       }
     })
 
-    this.pages.push(this.$route)
+    var pages_ = window.localStorage.getItem('mulitab_pages')
+
+    if (pages_) {
+      this.pages = JSON.parse(pages_)
+    } else {
+      this.pages.push(this.$route)
+    }
     this.fullPathList.push(this.$route.fullPath)
     this.selectedLastPath()
   },
@@ -124,11 +130,33 @@ export default {
       this.activeKey = newVal.fullPath
       if (this.fullPathList.indexOf(newVal.fullPath) < 0) {
         this.fullPathList.push(newVal.fullPath)
-        this.pages.push(newVal)
+        var find = false
+        for (var i = 0, page; page = this.pages[i++];) {
+          if (page.fullPath === newVal.fullPath) {
+            this.pages[i - 1] = newVal
+            find = true
+            break
+          }
+        }
+        !find && this.pages.push(newVal)
       }
     },
     activeKey: function (newPathKey) {
       this.$router.push({ path: newPathKey })
+    },
+    pages: function (value) {
+      console.log(value)
+      var pages_ = []
+      this.pages.forEach(page => {
+        pages_.push({
+          meta: {
+            customTitle: page.meta.customTitle,
+            title: page.meta.title
+          },
+          fullPath: page.fullPath
+        })
+      })
+      window.localStorage.setItem('mulitab_pages', JSON.stringify(pages_))
     }
   },
   render () {
