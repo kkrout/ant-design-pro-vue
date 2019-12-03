@@ -40,11 +40,14 @@ var GOABLE_LOADING
 //  REQUEST 请求异常拦截
 axios.interceptors.request.use(config => {
   //= =========  所有请求之前都要执行的操作  ==============
-  try {
-    GOABLE_LOADING && GOABLE_LOADING()
-    GOABLE_LOADING = Message.loading('请求中...')
-  } catch (e) {
-    console.error(e)
+  console.log(config)
+  if (!config.url.startsWith('/api/coll')) {
+    try {
+      GOABLE_LOADING && GOABLE_LOADING()
+      GOABLE_LOADING = Message.loading('请求中...', 60)
+    } catch (e) {
+      console.error(e)
+    }
   }
   return config
 }, err => {

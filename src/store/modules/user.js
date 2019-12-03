@@ -53,7 +53,7 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
           const { isAdmin, loginName } = response.data
-          const result = initUser(isAdmin === 'Y', loginName)
+          const result = initUser(true, loginName)
           if (result.role && result.role.permissions.length > 0) {
             const role = result.role
             role.permissions = result.role.permissions

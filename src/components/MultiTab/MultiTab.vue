@@ -145,7 +145,6 @@ export default {
       this.$router.push({ path: newPathKey })
     },
     pages: function (value) {
-      console.log(value)
       var pages_ = []
       this.pages.forEach(page => {
         pages_.push({

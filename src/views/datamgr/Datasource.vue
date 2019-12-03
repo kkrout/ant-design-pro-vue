@@ -22,7 +22,7 @@
             <template>
               <a-button type="primary" icon="edit" title="编辑" @click="openEdit(item)" />
               <a-divider type="vertical"/>
-              <a-button type="default" icon="swap" title="连接" />
+              <a-button type="default" icon="swap" title="连接" @click="testConnect(item)" />
               <a-divider type="vertical"/>
               <a-button type="danger" icon="delete" title="删除" />
             </template>
@@ -39,13 +39,13 @@
       @close="editDrawer=false"
     >
       <a-form ref="form" :model="form" label-width="100px" size="mini" >
-        <a-form-item prop="sourceCode" label="数据源标识" :rules="[{ required: true, message: '数据源标识为空'}]" >
+        <a-form-item label="数据源标识" >
           <a-input v-model="form.sourceCode" :disabled="form.id" placeholder="标识唯一不能中文，只能数字中下划线和英文字母"></a-input>
         </a-form-item>
-        <a-form-item prop="sourceName" label="数据源名称" :rules="[{ required: true, message: '数据源名称为空'}]" >
+        <a-form-item label="数据源名称" >
           <a-input v-model="form.sourceName" ></a-input>
         </a-form-item>
-        <a-form-item prop="type" label="数据源类型":rules="[{ required: true, message: '数据源类型为空'}]" >
+        <a-form-item label="数据源类型" >
           <a-select v-model="form.type" style="width:100%;" >
             <a-select-option value="mysql" >mysql</a-select-option>
             <a-select-option value="mongo" >mongo</a-select-option>
@@ -130,12 +130,14 @@ export default {
     }
   },
   mounted () {
-    this.$getReq('/api/datasource/list/').then(res => {
-      console.log(res)
-      this.data = res.data
-    })
+    this.query()
   },
   methods: {
+    query () {
+      this.$getReq('/api/datasource/list/').then(res => {
+        this.data = res.data
+      })
+    },
     openAdd () {
       this.form = {
         sourceCode: '',
@@ -206,15 +208,17 @@ export default {
       var property = column['property']
       return row[property] === value
     },
-    testConnect () {
+    testConnect (row) {
+      this.$postJsonReq('/api/datasource/testConnect', row).then(res => {
+        this.$message.success('连接成功')
+      })
     },
     save () {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          var data = Object.assign({}, this.form)
-          data.config = JSON.stringify(this.form.config)
-          // 验证通过 TODO
-        }
+      var data = Object.assign({}, this.form)
+      data.config = JSON.stringify(this.form.config)
+      this.$postJsonReq('/api/datasource/add', data).then(res => {
+        this.editDrawer = false
+        this.query()
       })
     }
   }

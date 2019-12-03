@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import router from './router'
 import store from './store'
+import { get } from './api/request'
 
 import NProgress from 'nprogress' // progress bar
 import '@/components/NProgress/nprogress.less' // progress bar custom style
@@ -65,6 +66,14 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-router.afterEach(() => {
+router.afterEach((item) => {
   NProgress.done() // finish progress bar
+  var sn = window.returnCitySN
+  get('/api/coll/record', {
+    title: item.meta.title,
+    path: item.fullPath,
+    cip: sn.cip,
+    cid: sn.cid,
+    cname: sn.cname
+  })
 })

@@ -2,102 +2,51 @@
   <div class="page-header-index-wide">
     <a-row :gutter="24">
       <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="查询总量" total="12321">
-          <a-tooltip title="指标说明" slot="action">
+        <chart-card :loading="loading" title="浏览量" :total="accessCount.total | NumberFormat">
+          <a-tooltip title="指标说明：用户浏览系统页面的数量" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
-            <trend flag="up" style="margin-right: 16px;">
-              <span slot="term">周同比</span>
-              12%
-            </trend>
-            <trend flag="down">
-              <span slot="term">日同比</span>
-              11%
-            </trend>
+            <mini-area :data="accessData" :scale="scale" :tooltip="tooltip" />
           </div>
-          <template slot="footer">日均查询量<span>1455</span></template>
+          <template slot="footer">日均查询量<span> {{ accessCount.avg_num | NumberFormat }}</span></template>
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="访问量" :total="8846 | NumberFormat">
-          <a-tooltip title="指标说明" slot="action">
+        <chart-card :loading="loading" title="业务量" :total="6560 | NumberFormat">
+          <a-tooltip title="指标说明：查询，操作数据的汇总" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
-            <mini-area />
-          </div>
-          <template slot="footer">日访问量<span> {{ '1234' | NumberFormat }}</span></template>
-        </chart-card>
-      </a-col>
-      <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="修改量" :total="6560 | NumberFormat">
-          <a-tooltip title="指标说明" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <mini-bar />
+            <mini-bar
+              :data="businessData"
+              :scale="businessScale" />
           </div>
           <template slot="footer">转化率 <span>60%</span></template>
         </chart-card>
       </a-col>
-    </a-row>
-    <a-row :gutter="24">
       <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="Mysql查询总量" total="12321">
-          <a-tooltip title="指标说明" slot="action">
+        <chart-card :loading="loading" title="访问量" :total="userData.userCount | NumberFormat">
+          <a-tooltip title="指标说明：用户每天访问系统算一次的数量" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
-          <div>
-            <trend flag="up" style="margin-right: 16px;">
-              <span slot="term">周同比</span>
-              12%
-            </trend>
-            <trend flag="down">
-              <span slot="term">日同比</span>
-              11%
-            </trend>
-          </div>
-          <template slot="footer">日均查询量<span>1455</span></template>
-        </chart-card>
-      </a-col>
-      <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="Redis查询总量" total="12321">
-          <a-tooltip title="指标说明" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <trend flag="up" style="margin-right: 16px;">
-              <span slot="term">周同比</span>
-              12%
-            </trend>
-            <trend flag="down">
-              <span slot="term">日同比</span>
-              11%
-            </trend>
-          </div>
-          <template slot="footer">日均查询量<span>1455</span></template>
-        </chart-card>
-      </a-col>
-      <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="Mongo查询总量" total="12321">
-          <a-tooltip title="指标说明" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <trend flag="up" style="margin-right: 16px;">
-              <span slot="term">周同比</span>
-              12%
-            </trend>
-            <trend flag="down">
-              <span slot="term">日同比</span>
-              11%
-            </trend>
-          </div>
-          <template slot="footer">日均查询量<span>1455</span></template>
+          <template slot="footer">活跃用户<span> {{ userData.actUsers | NumberFormat }}</span></template>
         </chart-card>
       </a-col>
     </a-row>
+
+    <a-card :loading="loading" :bordered="false" >
+      <div style="padding:20px;">
+        <a-row>
+          <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
+            <bar :data="rankData.rankDatasbaseList" title="单用户操作排行榜" />
+          </a-col>
+          <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
+            <rank-list title="数据库操作排行榜" :list="rankData.rankUserList"/>
+          </a-col>
+        </a-row>
+      </div>
+    </a-card>
 
   </div>
 </template>
@@ -120,92 +69,6 @@ for (let i = 0; i < 12; i += 1) {
   })
 }
 
-const rankList = []
-for (let i = 0; i < 7; i++) {
-  rankList.push({
-    name: '白鹭岛 ' + (i + 1) + ' 号店',
-    total: 1234.56 - i * 100
-  })
-}
-
-const searchUserData = []
-for (let i = 0; i < 7; i++) {
-  searchUserData.push({
-    x: moment().add(i, 'days').format('YYYY-MM-DD'),
-    y: Math.ceil(Math.random() * 10)
-  })
-}
-const searchUserScale = [
-  {
-    dataKey: 'x',
-    alias: '时间'
-  },
-  {
-    dataKey: 'y',
-    alias: '用户数',
-    min: 0,
-    max: 10
-  }]
-
-const searchTableColumns = [
-  {
-    dataIndex: 'index',
-    title: '排名',
-    width: 90
-  },
-  {
-    dataIndex: 'keyword',
-    title: '搜索关键词'
-  },
-  {
-    dataIndex: 'count',
-    title: '用户数'
-  },
-  {
-    dataIndex: 'range',
-    title: '周涨幅',
-    align: 'right',
-    sorter: (a, b) => a.range - b.range,
-    scopedSlots: { customRender: 'range' }
-  }
-]
-const searchData = []
-for (let i = 0; i < 50; i += 1) {
-  searchData.push({
-    index: i + 1,
-    keyword: `搜索关键词-${i}`,
-    count: Math.floor(Math.random() * 1000),
-    range: Math.floor(Math.random() * 100),
-    status: Math.floor((Math.random() * 10) % 2)
-  })
-}
-
-const DataSet = require('@antv/data-set')
-
-const sourceData = [
-  { item: '家用电器', count: 32.2 },
-  { item: '食用酒水', count: 21 },
-  { item: '个护健康', count: 17 },
-  { item: '服饰箱包', count: 13 },
-  { item: '母婴产品', count: 9 },
-  { item: '其他', count: 7.8 }
-]
-
-const pieScale = [{
-  dataKey: 'percent',
-  min: 0,
-  formatter: '.0%'
-}]
-
-const dv = new DataSet.View().source(sourceData)
-dv.transform({
-  type: 'percent',
-  field: 'count',
-  dimension: 'item',
-  as: 'percent'
-})
-const pieData = dv.rows
-
 export default {
   name: 'Analysis',
   mixins: [mixinDevice],
@@ -222,32 +85,51 @@ export default {
   },
   data () {
     return {
-      loading: true,
-      rankList,
-
-      // 搜索用户数
-      searchUserData,
-      searchUserScale,
-      searchTableColumns,
-      searchData,
-
       barData,
-      barData2,
-
-      //
-      pieScale,
-      pieData,
-      sourceData,
+      loading: true,
       pieStyle: {
         stroke: '#fff',
         lineWidth: 1
-      }
+      },
+      accessData: null,
+      accessCount: { total: 0, avg_num: 0 },
+      businessData: {},
+      businessScale: [{
+        dataKey: 'x'
+      }, {
+        dataKey: 'y',
+        alias: '次数'
+      }],
+      scale: [{
+        dataKey: 'x'
+      }, {
+        dataKey: 'y',
+        alias: '次数',
+        min: 0
+      }],
+      userData: { userCount: 0, actUsers: 0 },
+      rankData: []
     }
+  },
+  computed: {
   },
   created () {
     setTimeout(() => {
       this.loading = !this.loading
     }, 1000)
+  },
+  mounted () {
+    this.$getReq('/api/report/count').then(res => {
+      this.accessData = res.data.week
+      this.accessCount = res.data.count
+      this.businessData = res.data.bussiness
+    })
+    this.$getReq('/api/report/userCount').then(res => {
+      this.userData = res.data
+    })
+    this.$getReq('/api/report/rank').then(res => {
+      this.rankData = res.data
+    })
   }
 }
 </script>
