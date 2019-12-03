@@ -35,19 +35,14 @@ new Vue({
   render: h => h(App)
 }).$mount('#app')
 
+var requestSeq = 0
 var GOABLE_LOADING
 
 //  REQUEST 请求异常拦截
 axios.interceptors.request.use(config => {
   //= =========  所有请求之前都要执行的操作  ==============
-  console.log(config)
   if (!config.url.startsWith('/api/coll')) {
-    try {
-      GOABLE_LOADING && GOABLE_LOADING()
-      GOABLE_LOADING = Message.loading('请求中...', 60)
-    } catch (e) {
-      console.error(e)
-    }
+    requestSeq++
   }
   return config
 }, err => {
@@ -60,10 +55,8 @@ axios.interceptors.request.use(config => {
 
 //  RESPONSE 响应异常拦截
 axios.interceptors.response.use(data => {
-  try {
-    GOABLE_LOADING && GOABLE_LOADING()
-  } catch (e) {
-    console.error(e)
+  if (!data.config.url.startsWith('/api/coll')) {
+    requestSeq--
   }
   if (!data.data.success) {
     Message.error(data.data.message)
@@ -89,10 +82,9 @@ axios.interceptors.response.use(data => {
     case 500:
       Message.error(err.response.data.message)
   }
-  try {
-    GOABLE_LOADING && GOABLE_LOADING()
-  } catch (e) {
-    console.error(e)
+
+  if (!err.config.url.startsWith('/api/coll')) {
+    requestSeq--
   }
   return Promise.reject(err)
 })
@@ -104,3 +96,15 @@ Vue.prototype.$delReq = del
 Vue.prototype.$post = post
 Vue.prototype.$put = put
 Vue.prototype.$upload = upload
+
+// 请求超过500ms提示正在加载
+setInterval(() => {
+  if (requestSeq > 0) {
+    if (!GOABLE_LOADING) {
+      console.log(requestSeq)
+      GOABLE_LOADING = Message.loading('请求中...', 60)
+    }
+  } else {
+    GOABLE_LOADING && GOABLE_LOADING()
+  }
+}, 500)
