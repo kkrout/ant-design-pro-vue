@@ -13,7 +13,7 @@
       <a-button type="primary" style="margin-right:5px;" @click="columnsOption" icon="table" ></a-button>
     </a-tooltip>
     <a-card :bordered="false">
-      <a-row :gutter="20">
+      <a-row :gutter="{ xs: 8, sm: 16, md: 24}">
         <a-col :span="5">
           <div>
             <a-button size="small" type="link" @click="toAdvance" style="margin-right: 5px;" >高级SQL查询</a-button>
@@ -21,7 +21,7 @@
           </div>
           <a-menu
             ref="menu"
-            style="width: 280px;height:calc(100vh - 180px);overflow-y: auto;overflow-x: hidden;"
+            style="width: 100%;height:calc(100vh - 180px);overflow-y: auto;overflow-x: hidden;"
             :openKeys.sync="openKeys"
             v-model="selectKeys"
             mode="inline"

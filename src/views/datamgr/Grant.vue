@@ -57,27 +57,6 @@
             <a-checkbox v-model="grantDatabase[record.sourceCode]" @change="grantBoxChange($event,record)" ></a-checkbox>
           </template>
         </a-table>
-        <!--<el-table-->
-        <!--size="mini"-->
-        <!--ref="formTable"-->
-        <!--:data="dataSourceData"-->
-        <!--stripe-->
-        <!--highlight-current-row-->
-        <!--height="calc(100% - 80px)" >-->
-        <!--<el-table-column type="index" align="center" width="70" ></el-table-column>-->
-        <!--<el-table-column type="selection" align="center" width="60" ></el-table-column>-->
-        <!--<el-table-column property="sourceCode" label="数据源标识" min-width="120"></el-table-column>-->
-        <!--<el-table-column property="sourceName" label="数据源名称" min-width="120"></el-table-column>-->
-        <!--<el-table-column property="sourceName" label="权限" min-width="120">-->
-        <!--<template slot-scope="scope">-->
-        <!--<el-checkbox-->
-        <!--v-model="grantDatabase[scope.row.sourceCode]"-->
-        <!--@change="grantBoxChange($event,scope.row)"-->
-        <!--:true-label="1"-->
-        <!--:false-label="0" >修改</el-checkbox>-->
-        <!--</template>-->
-        <!--</el-table-column>-->
-        <!--</el-table>-->
         <div style="position: absolute;bottom: 20px;text-align: center;width: calc(100% - 40px);">
           <a-button-group>
             <a-button type="primary" @click="save" >保存</a-button>
@@ -158,7 +137,7 @@ export default {
         this.selectList.push(row.sourceCode)
       }
     },
-    open () {
+    openAdd () {
       this.addDrawer = true
       this.grantDatabase = {}
       this.form = {
@@ -167,7 +146,7 @@ export default {
         databases: '',
         grants: ''
       }
-      this.$refs.formTable.clearSelection()
+      this.selectList = []
     },
     loadDatasource () {
       this.$getReq('/api/datasource/list/').then(res => {

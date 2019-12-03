@@ -13,7 +13,7 @@
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="8" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="业务量" :total="6560 | NumberFormat">
+        <chart-card :loading="loading" title="业务量" :total="totalBusiness | NumberFormat">
           <a-tooltip title="指标说明：查询，操作数据的汇总" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
@@ -39,10 +39,10 @@
       <div style="padding:20px;">
         <a-row>
           <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-            <bar :data="rankData.rankDatasbaseList" title="单用户操作排行榜" />
+            <bar :data="rankData.rankDatasbaseList" title="数据库操作排行榜" />
           </a-col>
           <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-            <rank-list title="数据库操作排行榜" :list="rankData.rankUserList"/>
+            <rank-list title="单用户操作排行榜" :list="rankData.rankUserList"/>
           </a-col>
         </a-row>
       </div>
@@ -52,22 +52,8 @@
 </template>
 
 <script>
-import moment from 'moment'
 import { ChartCard, MiniArea, MiniBar, MiniProgress, RankList, Bar, Trend, NumberInfo, MiniSmoothArea } from '@/components'
 import { mixinDevice } from '@/utils/mixin'
-
-const barData = []
-const barData2 = []
-for (let i = 0; i < 12; i += 1) {
-  barData.push({
-    x: `${i + 1}月`,
-    y: Math.floor(Math.random() * 1000) + 200
-  })
-  barData2.push({
-    x: `${i + 1}月`,
-    y: Math.floor(Math.random() * 1000) + 200
-  })
-}
 
 export default {
   name: 'Analysis',
@@ -85,7 +71,6 @@ export default {
   },
   data () {
     return {
-      barData,
       loading: true,
       pieStyle: {
         stroke: '#fff',
@@ -93,7 +78,8 @@ export default {
       },
       accessData: null,
       accessCount: { total: 0, avg_num: 0 },
-      businessData: {},
+      businessData: [],
+      totalBusiness: 0,
       businessScale: [{
         dataKey: 'x'
       }, {
@@ -123,6 +109,11 @@ export default {
       this.accessData = res.data.week
       this.accessCount = res.data.count
       this.businessData = res.data.bussiness
+      var totalBusiness = 0
+      this.businessData.forEach(item => {
+        totalBusiness += parseInt(totalBusiness)
+      })
+      this.totalBusiness = totalBusiness
     })
     this.$getReq('/api/report/userCount').then(res => {
       this.userData = res.data
