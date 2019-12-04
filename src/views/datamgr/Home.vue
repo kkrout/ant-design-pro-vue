@@ -111,7 +111,7 @@ export default {
       this.businessData = res.data.bussiness
       var totalBusiness = 0
       this.businessData.forEach(item => {
-        totalBusiness += parseInt(totalBusiness)
+        totalBusiness += parseInt(item.y)
       })
       this.totalBusiness = totalBusiness
     })
