@@ -35,7 +35,6 @@ export default {
         this.showSheet = true
         this.$nextTick(() => {
           this.spreadsheet = jexcel(this.$refs.spreadsheet, options)
-          console.log(this.spreadsheet)
         })
       })
     }

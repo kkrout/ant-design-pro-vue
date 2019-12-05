@@ -6,6 +6,9 @@
           <a-tooltip class="item" effect="dark" content="Ctrl+D" placement="bottom">
             <a-button size="small" type="primary" @click="executeSql" >执行查询</a-button>
           </a-tooltip>
+          <a-tooltip class="item" effect="dark" content="Ctrl+D" placement="bottom">
+            <a-button size="small" type="primary" @click="exportSql" >后台导出</a-button>
+          </a-tooltip>
           <!--<el-button size="mini" type="primary" >保存</el-button>-->
           <a-tooltip class="item" effect="dark" content="Ctrl+M" placement="bottom">
             <a-button size="small" type="success" @click="formatSql" >美化</a-button>
@@ -374,6 +377,29 @@ export default {
     },
     chooseSource (data) {
       window.location.href = '?sourceCode=' + data.sourceCode
+    },
+    exportSql () {
+      var sql = this.sqlEditor.getSelection() || this.sqlEditor.getValue()
+      if (!sql) {
+        this.$message.error('没有什么可以执行的')
+        return
+      }
+      this.$post('/api/export/exportSql', { sql: sql, datasource: this.datasource }).then(res => {
+        // var that = this
+        this.$confirm({
+          title: '提示',
+          content: '任务添加成功，是否跳转到我的导出列表进行查看进度？',
+          onOk: () => {
+            if (window.opener == null) {
+              this.$router.push({ name: 'Export' })
+            } else {
+              window.open('', '_self').close()
+            }
+          },
+          onCancel () {
+          }
+        })
+      })
     }
   },
   /* 组件创建完成事件  */

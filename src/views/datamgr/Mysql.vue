@@ -41,10 +41,16 @@
           <a-form ref="form" size="small" layout="inline" @keyup.enter.native="searchOption" inline>
             <a-form-item label="过滤条件" label-width="80px">
               <div style="margin-bottom:5px;" v-for="(filOpt,index) in optionList" :key="filOpt.field" >
-                <a-select size="small" v-model="filOpt.field" allowClear showSearch style="width:100px;margin-right:5px;" >
-                  <a-select-option v-for="item in queryFieldList" :value="item" :key="item" >{{ item }}</a-select-option>
+                <a-select
+                  size="small"
+                  v-model="filOpt.field"
+                  allowClear
+                  showSearch
+                  :dropdownMatchSelectWidth="false"
+                  style="width:200px;margin-right:5px;" >
+                  <a-select-option v-for="item in queryFieldList" :value="item" :key="item" >{{ item.toLowerCase() }}</a-select-option>
                 </a-select>
-                <a-select size="small" v-model="filOpt.field" allowClear showSearch style="width:100px;margin-right:5px;" >
+                <a-select size="small" v-model="filOpt.option" allowClear showSearch style="width:100px;margin-right:5px;" >
                   <a-select-option value="like">包含</a-select-option>
                   <a-select-option value="=">等于</a-select-option>
                   <a-select-option value=">">大于</a-select-option>
@@ -209,7 +215,7 @@ export default {
       optionList: [{
         field: '',
         query: '',
-        option: null
+        option: ''
       }],
       selectKeys: [],
       databaseList: [],
@@ -223,7 +229,8 @@ export default {
       tableKey: '',
       tablesInformation: [],
       detailModel: false,
-      tabledetailModel: false
+      tabledetailModel: false,
+      tableColumns: {}
     }
   },
   computed: {
@@ -327,11 +334,9 @@ export default {
       }
       this.$getReq('/api/mysql-data/getTableFileds', { datasource: sourceCode }).then(res => {
         var tables = Object.keys(res.data).sort()
+        this.tableColumns = res.data
         this.$set(database, 'children', tables)
       })
-    },
-    selectTableMenu ({ key }) {
-      this.tableName = key
     },
     loadDataSource () {
       this.$getReq('/api/datasource/list/mysql').then(res => {
@@ -381,6 +386,9 @@ export default {
       }
       console.log(this.$refs.excelResult)
       this.$refs.excelResult.load(option)
+    },
+    selectTableMenu ({ key }) {
+      this.queryFieldList = this.tableColumns[key]
     }
   },
   /* 组件创建完成事件  */

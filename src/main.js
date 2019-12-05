@@ -38,26 +38,28 @@ new Vue({
 var requestSeq = 0
 var GOABLE_LOADING
 
+const isWhiteList = function (url) {
+  return !url.startsWith('/api/coll') &&
+    !url.startsWith('/api/message')
+}
+
 //  REQUEST 请求异常拦截
 axios.interceptors.request.use(config => {
   //= =========  所有请求之前都要执行的操作  ==============
-  if (!config.url.startsWith('/api/coll')) {
+  if (isWhiteList(config.url)) {
     requestSeq++
   }
   return config
 }, err => {
-  var status = err.response.status
-  if (status == 504) {
-    Message.error('请求超时，请稍后重试')
-  }
   return Promise.reject(err)
 })
 
 //  RESPONSE 响应异常拦截
 axios.interceptors.response.use(data => {
-  if (!data.config.url.startsWith('/api/coll')) {
-    requestSeq--
+  if (!isWhiteList(data.config.url)) {
+    return data.data
   }
+  requestSeq--
   if (!data.data.success) {
     Message.error(data.data.message)
     return Promise.reject(data.data)
@@ -65,6 +67,9 @@ axios.interceptors.response.use(data => {
 
   return data.data
 }, err => {
+  if (!isWhiteList(err.config.url)) {
+    return Promise.reject(err)
+  }
   var status = err.response.status
   switch (status) {
     case 401:
@@ -82,10 +87,7 @@ axios.interceptors.response.use(data => {
     case 500:
       Message.error(err.response.data.message)
   }
-
-  if (!err.config.url.startsWith('/api/coll')) {
-    requestSeq--
-  }
+  requestSeq--
   return Promise.reject(err)
 })
 
@@ -101,10 +103,10 @@ Vue.prototype.$upload = upload
 setInterval(() => {
   if (requestSeq > 0) {
     if (!GOABLE_LOADING) {
-      console.log(requestSeq)
       GOABLE_LOADING = Message.loading('请求中...', 60)
     }
   } else {
     GOABLE_LOADING && GOABLE_LOADING()
+    GOABLE_LOADING = null
   }
 }, 500)

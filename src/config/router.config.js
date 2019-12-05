@@ -30,22 +30,50 @@ export const asyncRouterMap = [
         meta: { title: '权限管理', keepAlive: true, permission: [ 'datamgr' ] }
       },
       {
-        path: '/datamgr/mysql',
-        name: 'Mysql',
-        component: () => import('@/views/datamgr/Mysql'),
-        meta: { title: 'Mysql维护', keepAlive: true, permission: [ 'datamgr' ] }
+        path: '/datamgr',
+        name: 'Query',
+        meta: { title: '数据维护' },
+        component: RouteView,
+        children: [
+          {
+            path: 'mysql',
+            name: 'Mysql',
+            component: () => import('@/views/datamgr/Mysql'),
+            meta: { title: 'Mysql维护', keepAlive: true, permission: [ 'datamgr' ] }
+          },
+          {
+            path: 'redis',
+            name: 'Redis',
+            component: () => import('@/views/datamgr/Redis'),
+            meta: { title: 'Redis维护', keepAlive: true, permission: [ 'datamgr' ] }
+          },
+          {
+            path: 'mongo',
+            name: 'Mongo',
+            component: () => import('@/views/datamgr/Mongo'),
+            meta: { title: 'Mongo维护', keepAlive: true, permission: [ 'datamgr' ] }
+          }
+        ]
       },
       {
-        path: '/datamgr/redis',
-        name: 'Redis',
-        component: () => import('@/views/datamgr/Redis'),
-        meta: { title: 'redis维护', keepAlive: true, permission: [ 'datamgr' ] }
-      },
-      {
-        path: '/datamgr/mongo',
-        name: 'Mongo',
-        component: () => import('@/views/datamgr/Mongo'),
-        meta: { title: 'Mongo维护', keepAlive: true, permission: [ 'datamgr' ] }
+        path: '/workorder',
+        name: 'WorkOder',
+        meta: { title: '工单管理' },
+        component: RouteView,
+        children: [
+          {
+            path: 'create',
+            name: 'WorkOrderCreate',
+            component: () => import('@/views/datamgr/WorkorderCreate'),
+            meta: { title: '工单创建', keepAlive: false, permission: [ 'datamgr' ] }
+          },
+          {
+            path: 'query',
+            name: 'WorkOrderAudit',
+            component: () => import('@/views/datamgr/WorkorderQuery'),
+            meta: { title: '工单查询', keepAlive: true, permission: [ 'datamgr' ] }
+          }
+        ]
       },
       {
         path: '/datamgr/log',
@@ -441,7 +469,20 @@ export const constantRouterMap = [
       }
     ]
   },
-
+  {
+    path: '/export',
+    component: BasicLayout,
+    redirect: '',
+    children: [
+      {
+        path: '',
+        name: 'Export',
+        component: () => import('@/views/datamgr/Export'),
+        meta: { title: '我的导出', keepAlive: true, permission: [ 'datamgr' ] },
+        props: true
+      }
+    ]
+  },
   {
     path: '/404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
