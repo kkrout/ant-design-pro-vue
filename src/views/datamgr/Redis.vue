@@ -46,6 +46,51 @@
         </a-col>
       </a-row>
     </a-card>
+    <a-drawer
+      title="详情"
+      :width="700"
+      :visible="detailModel"
+      @close="detailModel=false">
+      <div style="padding: 8px 0px;">
+        <a-input
+          v-model="subParttenKeys"
+          placeholder="前半模糊搜索，redis对list类型没有提供API"
+          @keyup.enter.native="querySubkeys()"
+          size="mini"
+          suffix-icon="el-icon-search"
+          style="width: calc(100% - 100px)" ></a-input>
+        <el-button size="mini" type="primary" @click="querySubkeys()" >搜索</el-button>
+      </div>
+      <template v-if="currentData.type == 'string' " >
+        <pre >{{ currentData.value }}</pre>
+      </template>
+      <template v-else-if="currentData.type == 'list' " >
+        <Excel ref="subExcelResult" ></Excel>
+      </template>
+      <template v-else-if="currentData.type == 'hash' " >
+        <Excel ref="subExcelResult" ></Excel>
+      </template>
+      <template v-else-if="currentData.type == 'set' " >
+        <Excel ref="subExcelResult" ></Excel>
+      </template>
+      <template v-else-if="currentData.type == 'zset' " >
+        <Excel ref="subExcelResult" ></Excel>
+        <el-table
+          size="mini"
+          ref="table"
+          :data="queryZSetList"
+          border
+          class="mysql-result-table"
+          :header-row-style="{color:'black'}"
+          stripe
+          highlight-current-row
+          height="calc(100% - 70px)" >
+          <el-table-column type="index" width="70" fixed="left" ></el-table-column>
+          <el-table-column property="score" label="score" width="70"show-overflow-tooltip ></el-table-column>
+          <el-table-column property="value" label="value" show-overflow-tooltip min-width="300" ></el-table-column>
+        </el-table>
+      </template>
+    </a-drawer>
   </div>
 </template>
 
@@ -68,7 +113,9 @@ export default {
       parttenKeys: '',
       showValue: 0,
       keyList: [],
-      subParttenKeys: ''
+      subParttenKeys: '',
+      detailModel: false,
+      currentData: {}
     }
   },
   mounted () {
@@ -92,7 +139,45 @@ export default {
         this.databaseList = res.data
       })
     },
-    querySubkeys () {},
+    querySubkeys () {
+      this.$getReq('/api/redis-data/getValue', {
+        datasource: this.datasourceCode,
+        db: this.dbIndex,
+        parttenKeys: this.currentData.key,
+        type: this.currentData.type,
+        subParttenKeys: this.subParttenKeys
+      }).then(res => {
+        const list = []; const cols = []
+        switch (this.currentData.type) {
+          case 'string':
+            this.currentData.value = res.data
+            break
+          case 'hash':
+            cols.push('key', 'value')
+            res.data.forEach(item => {
+              list.push([item.key, item.value])
+            })
+            break
+          case 'list':
+          case 'set':
+            cols.push('value')
+            res.data.forEach(item => {
+              list.push(item.value)
+            })
+            break
+          case 'zset':
+            cols.push('score', 'value')
+            res.data.forEach(item => {
+              list.push([item.key, item.value])
+            })
+            break
+        }
+        this.detailModel = true
+        this.$nextTick(() => {
+          this.loadExcel(cols, list)
+        })
+      })
+    },
     onOpenChange (openKeys) {
       const latestOpenKey = openKeys.find(key => this.openKeys.indexOf(key) === -1)
       this.$nextTick(() => {
@@ -110,36 +195,30 @@ export default {
         this.$set(database, 'children', res.data)
       })
     },
-    loadExcel (result) {
-      var columns = []
-      var height = $(document).height() - 170
-
-      result.fields.forEach(item => {
-        columns.push({
-          type: 'text', title: item
-        })
-      })
-      var data = []
-      result.resultList.forEach(item => {
-        var item_ = []
-        result.fields.forEach(sub => {
-          item_.push(item[sub])
-        })
-        data.push(item_)
+    loadExcel (cols, list) {
+      var height = $(document).height()
+      var columns = []; var colWidths = []
+      cols.forEach(item => {
+        columns.push({ type: 'text', title: item })
+        colWidths.push(600 / cols.length)
       })
 
-      var option = {
-        data: data,
+      var option2 = {
+        data: list,
         columns: columns,
-        tableHeight: height + 'px',
+        tableHeight: (height - 300) + 'px',
         tableOverflow: true,
-        tableWidth: '100%',
         search: true,
         csvFileName: '导出数据',
+        tableWidth: 700 + 'px',
+        colWidths: colWidths,
+        colAlignments: ['left', 'left', 'center'],
+        allowComments: false,
         pagination: 2000,
-        paginationOptions: [2000, 5000, 10000]
+        paginationOptions: [2000, 5000, 10000],
+        rowResize: true
       }
-      this.$refs.excelResult.load(option)
+      this.$refs.subExcelResult.load(option2)
     },
     selectTableMenu ({ key }) {
       if (!this.datasourceCode) {
@@ -198,6 +277,7 @@ export default {
             paginationOptions: [2000, 5000, 10000],
             rowResize: true,
             ondbclick: function (data) {
+              console.log(that.currentData)
               if (that.currentData.key === data[0]) { return }
               that.currentData = { key: data[0], value: data[1], type: data[2] }
               that.querySubkeys()
