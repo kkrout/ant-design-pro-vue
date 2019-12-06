@@ -53,6 +53,7 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
           const { isAdmin, loginName } = response.data
+          console.log(loginName)
           const result = initUser(loginName === 'zhdong', loginName)
           if (result.role && result.role.permissions.length > 0) {
             const role = result.role

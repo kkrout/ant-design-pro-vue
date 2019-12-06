@@ -16,7 +16,12 @@
       <a-list size="large" :showPagination="false">
         <a-list-item :key="index" v-for="(item, index) in data">
           <a-list-item-meta :description="item.connect">
-            <a slot="title">{{ item.sourceName }}</a>
+            <template slot="title">
+              <a style="margin-right:10px;">{{ item.sourceName }}</a>
+              <a-tag color="#2196F3" v-if="item.type == 'mysql'" >{{ item.type }}</a-tag>
+              <a-tag color="#009688" v-else-if="item.type == 'redis'" >{{ item.type }}</a-tag>
+              <a-tag color="#E91E63" v-else="" >{{ item.type }}</a-tag>
+            </template>
           </a-list-item-meta>
           <div slot="actions">
             <template>
@@ -60,7 +65,7 @@
             <a-input v-model.trim="form.config.username" placeholder="必填，root" ></a-input>
           </a-form-item>
           <a-form-item key="mysql_pwd" prop="config.password" label="密码" :rules="[{ required: true, message: '密码为空'}]">
-            <a-input v-model.trim="form.config.password" placeholder="必填，123456" ></a-input>
+            <a-input-password v-model.trim="form.config.password" placeholder="必填，123456" ></a-input-password>
           </a-form-item>
           <a-form-item key="mysql_db" prop="config.database" label="数据库" :rules="[{ required: true, message: '数据库'}]">
             <a-input v-model.trim="form.config.database" placeholder="必填，xxxDb" @change="toMysqlConnect" ></a-input>
@@ -74,10 +79,10 @@
             <a-input v-model.trim="form.config.username" placeholder="必填，root" ></a-input>
           </a-form-item>
           <a-form-item label="密码" :rules="[{ required: true, message: '密码为空'}]">
-            <a-input v-model.trim="form.config.password" placeholder="必填，123456" ></a-input>
+            <a-input-password v-model.trim="form.config.password" placeholder="必填，123456" ></a-input-password>
           </a-form-item>
           <a-form-item label="数据库" :rules="[{ required: true, message: '数据库'}]">
-            <el-input v-model.trim="form.config.database" placeholder="必填，xxxDb" ></el-input>
+            <a-input v-model.trim="form.config.database" placeholder="必填，xxxDb" ></a-input>
           </a-form-item>
         </template>
         <template v-if="form.type == 'redis' ">
@@ -85,7 +90,7 @@
             <a-input v-model.trim="form.config.address" placeholder="必填，xx.xx.xx.xx:6379" @change="toRedisConnect"></a-input>
           </a-form-item>
           <a-form-item key="redis_password" label="密码" :rules="[{ required: true, message: '密码为空'}]">
-            <a-input v-model.trim="form.config.password" placeholder="必填，123456" ></a-input>
+            <a-input-password v-model.trim="form.config.password" placeholder="必填，123456" ></a-input-password>
           </a-form-item>
         </template>
         <a-form-item prop="connect" label="连接串" :rules="[{ required: true, message: '连接串'}]" >

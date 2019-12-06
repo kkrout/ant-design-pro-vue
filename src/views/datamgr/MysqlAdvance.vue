@@ -143,6 +143,9 @@ export default {
       resultHeight: 270,
       databaseList: [],
       sourceModal: false,
+      options: {
+        alert: { show: false, clear: () => { } }
+      },
       historyColumns: [
         {
           title: 'index',
@@ -189,9 +192,6 @@ export default {
     }
   },
   methods: {
-    options: {
-      alert: { show: false, clear: () => { } }
-    },
     loadData (parameter) {
       var that = this
       return new Promise((resolve, reject) => {

@@ -38,10 +38,15 @@ export default {
 
     if (pages_) {
       this.pages = JSON.parse(pages_)
+      const paths = []
+      this.pages.forEach(item => {
+        paths.push(item.fullPath)
+      })
+      this.fullPathList = paths
     } else {
       this.pages.push(this.$route)
+      this.fullPathList.push(this.$route.fullPath)
     }
-    this.fullPathList.push(this.$route.fullPath)
     this.selectedLastPath()
   },
   methods: {

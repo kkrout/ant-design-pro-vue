@@ -36,19 +36,19 @@ export const asyncRouterMap = [
         component: RouteView,
         children: [
           {
-            path: 'mysql',
+            path: '/datamgr/mysql',
             name: 'Mysql',
             component: () => import('@/views/datamgr/Mysql'),
             meta: { title: 'Mysql维护', keepAlive: true, permission: [ 'datamgr' ] }
           },
           {
-            path: 'redis',
+            path: '/datamgr/redis',
             name: 'Redis',
             component: () => import('@/views/datamgr/Redis'),
             meta: { title: 'Redis维护', keepAlive: true, permission: [ 'datamgr' ] }
           },
           {
-            path: 'mongo',
+            path: '/datamgr/mongo',
             name: 'Mongo',
             component: () => import('@/views/datamgr/Mongo'),
             meta: { title: 'Mongo维护', keepAlive: true, permission: [ 'datamgr' ] }

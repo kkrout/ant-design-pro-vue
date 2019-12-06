@@ -58,8 +58,7 @@
           @keyup.enter.native="querySubkeys()"
           size="mini"
           suffix-icon="el-icon-search"
-          style="width: calc(100% - 100px)" ></a-input>
-        <el-button size="mini" type="primary" @click="querySubkeys()" >搜索</el-button>
+          style="width: 100%" ></a-input>
       </div>
       <template v-if="currentData.type == 'string' " >
         <pre >{{ currentData.value }}</pre>
@@ -75,20 +74,6 @@
       </template>
       <template v-else-if="currentData.type == 'zset' " >
         <Excel ref="subExcelResult" ></Excel>
-        <el-table
-          size="mini"
-          ref="table"
-          :data="queryZSetList"
-          border
-          class="mysql-result-table"
-          :header-row-style="{color:'black'}"
-          stripe
-          highlight-current-row
-          height="calc(100% - 70px)" >
-          <el-table-column type="index" width="70" fixed="left" ></el-table-column>
-          <el-table-column property="score" label="score" width="70"show-overflow-tooltip ></el-table-column>
-          <el-table-column property="value" label="value" show-overflow-tooltip min-width="300" ></el-table-column>
-        </el-table>
       </template>
     </a-drawer>
   </div>
@@ -148,10 +133,11 @@ export default {
         subParttenKeys: this.subParttenKeys
       }).then(res => {
         const list = []; const cols = []
+        this.detailModel = true
         switch (this.currentData.type) {
           case 'string':
             this.currentData.value = res.data
-            break
+            return
           case 'hash':
             cols.push('key', 'value')
             res.data.forEach(item => {
@@ -172,7 +158,6 @@ export default {
             })
             break
         }
-        this.detailModel = true
         this.$nextTick(() => {
           this.loadExcel(cols, list)
         })
