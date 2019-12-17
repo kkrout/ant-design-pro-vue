@@ -15,7 +15,7 @@ export const asyncRouterMap = [
         path: '/home',
         name: 'start',
         component: () => import('@/views/datamgr/Home'),
-        meta: { title: '首页', keepAlive: true, icon: bxAnaalyse, permission: [ 'datamgr' ] }
+        meta: { title: '首页', keepAlive: false, icon: bxAnaalyse, permission: [ 'datamgr' ] }
       },
       {
         path: '/datamgr/datesource',

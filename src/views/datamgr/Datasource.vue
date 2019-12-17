@@ -71,20 +71,6 @@
             <a-input v-model.trim="form.config.database" placeholder="必填，xxxDb" @change="toMysqlConnect" ></a-input>
           </a-form-item>
         </template>
-        <template v-if="form.type == 'mongo' ">
-          <a-form-item label="主机端口" :rules="[{ required: true, message: '主机端口为空'}]" >
-            <a-input v-model.trim="form.config.address" placeholder="必填，xx.xx.xx.xx:3306"></a-input>
-          </a-form-item>
-          <a-form-item label="用户名" :rules="[{ required: true, message: '用户名为空'}]">
-            <a-input v-model.trim="form.config.username" placeholder="必填，root" ></a-input>
-          </a-form-item>
-          <a-form-item label="密码" :rules="[{ required: true, message: '密码为空'}]">
-            <a-input-password v-model.trim="form.config.password" placeholder="必填，123456" ></a-input-password>
-          </a-form-item>
-          <a-form-item label="数据库" :rules="[{ required: true, message: '数据库'}]">
-            <a-input v-model.trim="form.config.database" placeholder="必填，xxxDb" ></a-input>
-          </a-form-item>
-        </template>
         <template v-if="form.type == 'redis' ">
           <a-form-item key="redis_address" label="主机端口" :rules="[{ required: true, message: '主机端口为空'}]" >
             <a-input v-model.trim="form.config.address" placeholder="必填，xx.xx.xx.xx:6379" @change="toRedisConnect"></a-input>

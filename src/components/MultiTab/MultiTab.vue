@@ -43,11 +43,12 @@ export default {
         paths.push(item.fullPath)
       })
       this.fullPathList = paths
+      this.activeKey = window.location.pathname
     } else {
       this.pages.push(this.$route)
       this.fullPathList.push(this.$route.fullPath)
+      this.selectedLastPath()
     }
-    this.selectedLastPath()
   },
   methods: {
     onEdit (targetKey, action) {
