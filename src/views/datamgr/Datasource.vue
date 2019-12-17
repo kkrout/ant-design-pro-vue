@@ -71,6 +71,11 @@
             <a-input v-model.trim="form.config.database" placeholder="必填，xxxDb" @change="toMysqlConnect" ></a-input>
           </a-form-item>
         </template>
+        <template v-if="form.type == 'mongo' ">
+          <a-form-item label="数据库" :rules="[{ required: true, message: '数据库'}]">
+            <a-input v-model.trim="form.config.database" placeholder="必填，xxxDb" ></a-input>
+          </a-form-item>
+        </template>
         <template v-if="form.type == 'redis' ">
           <a-form-item key="redis_address" label="主机端口" :rules="[{ required: true, message: '主机端口为空'}]" >
             <a-input v-model.trim="form.config.address" placeholder="必填，xx.xx.xx.xx:6379" @change="toRedisConnect"></a-input>
