@@ -67,6 +67,9 @@
         <span slot="index" slot-scope="text, record, index">
           {{ index + 1 }}
         </span>
+        <div slot="sql" slot-scope="text" style="white-space: nowrap;" >
+          <ellipsis length="50" >{{ text }}</ellipsis>
+        </div>
       </s-table>
     </a-modal>
 
@@ -120,11 +123,12 @@ import 'codemirror/addon/hint/show-hint'
 import 'codemirror/addon/hint/show-hint.css'
 import sqlFormatter from 'sql-formatter'
 import { Excel, STable } from '@/components'
+import { Ellipsis } from '@/components'
 
 export default {
   name: 'MysqlAdvance',
   components: {
-    Excel, STable
+    Excel, STable, Ellipsis
   },
   data: function () {
     return {
@@ -159,7 +163,8 @@ export default {
         },
         {
           title: '执行内容',
-          dataIndex: 'text'
+          dataIndex: 'text',
+          scopedSlots: { customRender: 'sql' }
         },
         {
           title: '受影响记录',
