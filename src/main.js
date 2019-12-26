@@ -75,7 +75,7 @@ axios.interceptors.response.use(data => {
     case 401:
       Message.error('登录超时，请重新登录')
       store.dispatch('Logout').then(() => {
-        window.location.href = '/user/login'
+        window.location.href = '/user/login?redirect=' + window.location.pathname + window.location.search
       })
       break
     case 404:
