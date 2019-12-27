@@ -290,8 +290,16 @@ export default {
         this.$message.error('请选择数据库')
         return
       }
-      this.$postJsonReq('/api/mysql-data/delteBackupTable', { datasource: this.datasourceCode }).then(res => {
-        location.reload()
+      this.$confirm({
+        title: '风险提示',
+        content: '操作存在风险，确认清除备份表吗?',
+        onOk: () => {
+          this.$postJsonReq('/api/mysql-data/delteBackupTable', { datasource: this.datasourceCode }).then(res => {
+            location.reload()
+          })
+        },
+        onCancel () {
+        }
       })
     },
     tableOption () {

@@ -104,7 +104,7 @@ export default {
       this.loading = !this.loading
     }, 1000)
   },
-  mounted () {
+  activated () {
     this.$getReq('/api/report/count').then(res => {
       this.accessData = res.data.week
       this.accessCount = res.data.count
