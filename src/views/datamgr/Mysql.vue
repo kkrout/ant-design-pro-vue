@@ -60,21 +60,21 @@
                 <a-button
                   size="small"
                   style="margin-right:5px;"
-                  v-if="index == optionList.length-1"
-                  type="primary"
-                  icon="plus"
-                  @click="addOption" ></a-button>
-                <a-button
-                  size="small"
-                  style="margin-right:5px;"
-                  v-if="index < optionList.length-1"
+                  v-if="optionList.length > 1"
                   type="danger"
                   icon="delete"
                   @click="delOption(index)" ></a-button>
                 <a-button
                   size="small"
                   style="margin-right:5px;"
-                  v-if="index == optionList.length-1"
+                  v-if="index == 0"
+                  type="primary"
+                  icon="plus"
+                  @click="addOption" ></a-button>
+                <a-button
+                  size="small"
+                  style="margin-right:5px;"
+                  v-if="index == 0"
                   type="primary"
                   icon="search"
                   @click="searchOption" ></a-button>

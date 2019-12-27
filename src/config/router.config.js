@@ -56,25 +56,31 @@ export const asyncRouterMap = [
         ]
       },
       {
-        path: '/workorder',
-        name: 'WorkOder',
-        meta: { title: '工单管理' },
-        component: RouteView,
-        children: [
-          {
-            path: 'create',
-            name: 'WorkOrderCreate',
-            component: () => import('@/views/datamgr/WorkorderCreate'),
-            meta: { title: '工单创建', keepAlive: false, permission: [ 'datamgr' ] }
-          },
-          {
-            path: 'query',
-            name: 'WorkOrderAudit',
-            component: () => import('@/views/datamgr/WorkorderQuery'),
-            meta: { title: '工单查询', keepAlive: true, permission: [ 'datamgr' ] }
-          }
-        ]
+        path: '/datamgr/busi-report',
+        name: 'BusinessReport',
+        component: () => import('@/views/datamgr/BusinessReport'),
+        meta: { title: '业务报表', keepAlive: true, permission: [ 'datamgr' ] }
       },
+      // {
+      //   path: '/workorder',
+      //   name: 'WorkOder',
+      //   meta: { title: '工单管理' },
+      //   component: RouteView,
+      //   children: [
+      //     {
+      //       path: 'create',
+      //       name: 'WorkOrderCreate',
+      //       component: () => import('@/views/datamgr/WorkorderCreate'),
+      //       meta: { title: '工单创建', keepAlive: false, permission: [ 'datamgr' ] }
+      //     },
+      //     {
+      //       path: 'query',
+      //       name: 'WorkOrderAudit',
+      //       component: () => import('@/views/datamgr/WorkorderQuery'),
+      //       meta: { title: '工单查询', keepAlive: true, permission: [ 'datamgr' ] }
+      //     }
+      //   ]
+      // },
       {
         path: '/datamgr/log',
         name: 'Logs',

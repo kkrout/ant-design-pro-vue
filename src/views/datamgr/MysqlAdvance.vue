@@ -67,8 +67,8 @@
         <span slot="index" slot-scope="text, record, index">
           {{ index + 1 }}
         </span>
-        <div slot="sql" slot-scope="text" style="white-space: nowrap;" >
-          <ellipsis length="50" >{{ text }}</ellipsis>
+        <div slot="sql" slot-scope="text" style="white-space: nowrap;width:200px;text-overflow: ellipsis;overflow: hidden;" >
+          {{ text }}
         </div>
       </s-table>
     </a-modal>
@@ -164,7 +164,8 @@ export default {
         {
           title: '执行内容',
           dataIndex: 'text',
-          scopedSlots: { customRender: 'sql' }
+          scopedSlots: { customRender: 'sql' },
+          width: '200px'
         },
         {
           title: '受影响记录',
