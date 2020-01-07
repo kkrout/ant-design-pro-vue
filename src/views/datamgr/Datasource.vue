@@ -187,7 +187,8 @@ export default {
       var address = this.form.config.address
       this.form.connect = 'redis://' + address
     },
-    parseConnet (v) {
+    parseConnet () {
+      var v = this.form.connect
       var startStr = 'jdbc:mysql://'
       if (v.indexOf(startStr) === 0) {
         this.form.type = 'mysql'
@@ -219,6 +220,15 @@ export default {
       })
     },
     save () {
+      if (!this.form.sourceCode) {
+        this.$message.error('数据源标识不能为空')
+        return
+      }
+      if (!this.form.sourceName) {
+        this.$message.error('数据源名称不能为空')
+        return
+      }
+
       var data = Object.assign({}, this.form)
       data.config = JSON.stringify(this.form.config)
       this.$postJsonReq('/api/datasource/add', data).then(res => {
