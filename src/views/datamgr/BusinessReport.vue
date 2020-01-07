@@ -1,9 +1,9 @@
 <template>
   <div>
     <a-card :bordered="false" >
-      <a-input-search slot="title" placeholder="报表名称" style="margin-left: 16px; width: 200px;" />
+      <a-input-search slot="title" placeholder="建设中。。。" style="margin-left: 16px; width: 200px;" />
       <div slot="extra">
-        <a-button type="primary" style="margin-left: 16px;" icon="plus" >创建</a-button>
+        <a-button type="primary" style="margin-left: 16px;" icon="plus" @click="toAdd" >创建</a-button>
       </div>
       <a-row :gutter="{ xs: 8, sm: 16, md: 24}">
         <a-col :span="5">
@@ -62,7 +62,7 @@
                       </a-form-item>
                     </a-col>
                     <a-col :span="8" >
-                      <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="报表名称">
+                      <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="数据源">
                         <a-select
                           v-model="config.sourceCode"
                           allowClear
@@ -173,10 +173,20 @@ export default {
   },
   methods: {
     toAdd () {
+      var group = this.openKeys[0]
+      if (!group) {
+        this.$message.error('请选择分组')
+        return
+      }
       this.config = {
         coonditionJson: [],
         fieldJson: []
       }
+      this.config.group = group
+      this.tabKey = '2'
+      this.$nextTick(() => {
+        !this.sqlEditor && this.initEditor()
+      })
     },
     initEditor () {
       var that = this
@@ -198,6 +208,7 @@ export default {
       })
       var height = $(document).height() - 430
       this.sqlEditor.setSize(null, height)
+      console.log(this.sqlEditor)
     },
     parseParam () {
       var sql = this.sqlEditor.getValue()
