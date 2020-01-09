@@ -29,6 +29,7 @@ import ExceptionPage from '@/components/Exception'
 import StandardFormRow from '@/components/StandardFormRow'
 import ArticleListContent from '@/components/ArticleListContent'
 import Excel from '@/components/Excel'
+import ProcessBar from '@/components/Process'
 
 export {
   AvatarList,
@@ -60,5 +61,6 @@ export {
   TagSelect,
   StandardFormRow,
   ArticleListContent,
-  Excel
+  Excel,
+  ProcessBar
 }

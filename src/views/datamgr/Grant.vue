@@ -170,9 +170,17 @@ export default {
       })
     },
     toDelete (row) {
-      this.$post('/api/right/delete/' + row.id).then(res => {
-        this.$message.success('删除成功')
-        this.query()
+      this.$confirm({
+        title: '提示',
+        content: '确认删除该用户权限？',
+        onOk: () => {
+          this.$post('/api/right/delete/' + row.id).then(res => {
+            this.$message.success('删除成功')
+            this.query()
+          })
+        },
+        onCancel () {
+        }
       })
     },
     splitList (str) {

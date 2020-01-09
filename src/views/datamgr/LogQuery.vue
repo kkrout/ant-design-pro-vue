@@ -2,14 +2,27 @@
   <div>
     <a-card title="我的导出列表">
       <div slot="extra">
-        <a-radio-group v-model="status" @change="query">
+        <a-radio-group v-model="param.sqlType" @change="query">
           <a-radio-button :value="null">全部</a-radio-button>
-          <a-radio-button :value="0">等待</a-radio-button>
-          <a-radio-button :value="1">进行中</a-radio-button>
-          <a-radio-button :value="2">成功</a-radio-button>
-          <a-radio-button :value="3">失败</a-radio-button>
+          <a-radio-button value="select">Mysql查询</a-radio-button>
+          <a-radio-button value="update">Mysql更新</a-radio-button>
+          <a-radio-button value="query">Mongo查询</a-radio-button>
+          <a-radio-button value="updateMany">Mongo修改</a-radio-button>
+          <a-radio-button value="deleteMany">Mongo删除</a-radio-button>
         </a-radio-group>
-        <a-input-search @search="query" v-model="exportName" style="margin-left: 16px; width: 272px;" />
+        <a-input-search @search="query" placeholder="执行人" v-model="param.createBy" style="margin: 0 16px; width: 272px;" />
+        <a-select
+          v-model="param.datasource"
+          allowClear
+          showSearch
+          placeholder="选择数据源"
+          @change="query"
+          style="width:300px;">
+          <a-select-option
+            v-for="item in datasources"
+            :value="item.sourceCode"
+            :key="item.sourceCode" >{{ item.sourceCode }}</a-select-option>
+        </a-select>
       </div>
       <a-list size="large" :showPagination="false">
         <a-empty v-if="!data.length" style="height: calc(100vh - 200px);line-height: calc(100vh - 200px);" ></a-empty>
@@ -22,20 +35,12 @@
           <a-list-item v-for="item in data" :key="item.id" >
             <a-list-item-meta >
               <!--<template slot="title" >-->
-              <a slot="title">{{ item.exportName }}</a>
               <!--<span style="margin-left:50px;">{{ item.createTime }}</span>-->
               <!--</template>-->
-              <template slot="avatar">
-                <a-tag v-if="item.excelStatus === 0" >等待</a-tag>
-                <a-tag v-else-if="item.excelStatus === 1" color="#108ee9" >处理中</a-tag>
-                <a-tag v-else-if="item.excelStatus === 2" color="#87d068" >成功</a-tag>
-                <a-tag v-else-if="item.excelStatus === 3 "color="#f50" >异常</a-tag>
-                <a-tag v-else-if="item.excelStatus === 4" color="rgb(110, 114, 109)" >拒绝</a-tag>
-                <a-tag v-else >其他</a-tag>
-              </template>
-              <a-tooltip slot="description" v-if="item.errorMsg" placement="top" style="width: 100vh;" >
-                <div class="sql-error" >{{ item.errorMsg }}</div>
-                <div slot="title" class="sql-error-tip">{{ item.errorMsg }}</div>
+              <a-button slot="avatar" type="link" block>{{ item.datasource }}</a-button>
+              <a-tooltip slot="description" placement="top" style="width: 100vh;" >
+                <div class="sql-error" >{{ item.text }}</div>
+                <div slot="title" class="sql-error-tip">{{ item.text }}</div>
               </a-tooltip>
             </a-list-item-meta>
             <div slot="actions" style="width: 100px;">
@@ -47,6 +52,14 @@
                 @click="downloadPath(item)" />
             </div>
             <div class="list-content">
+              <div class="list-content-item">
+                <a-tag v-if="item.sqlType === 'select'" >Mysql查询</a-tag>
+                <a-tag v-else-if="item.sqlType === 'update'" color="#108ee9" >Mysql更新</a-tag>
+                <a-tag v-else-if="item.sqlType === 'query'" color="#87d068" >Mongo查询</a-tag>
+                <a-tag v-else-if="item.sqlType === 'updateMany' "color="#f50" >Mongo修改</a-tag>
+                <a-tag v-else-if="item.sqlType === 'deleteMany'" color="rgb(110, 114, 109)" >Mongo删除</a-tag>
+                <a-tag v-else > 其他类型：{{ item.sqlType }}</a-tag>
+              </div>
               <div class="list-content-item">
                 <span>创建时间</span>
                 <p>{{ item.createTime }}</p>
@@ -74,7 +87,10 @@ export default {
   },
   data () {
     return {
+      param: { sqlType: null },
       data: [],
+      datasources: [],
+      start: 1,
       selectedRowKeys: [],
       limit: 10,
       busy: true,
@@ -91,30 +107,29 @@ export default {
   },
   mounted () {
     this.query()
+    this.$getReq('/api/datasource/list/mysql').then(res => {
+      this.datasources = res.data
+    })
   },
   methods: {
     query () {
-      this.$postJsonReq('/api/export/list/0/' + this.limit, {
-        excelStatus: this.status,
-        exportName: this.exportName
-      }).then(res => {
-        this.data = res.data
+      this.$postJsonReq('/api/mysql-data/logPage/' + this.limit + '/1', this.param).then(res => {
+        this.data = res.data.list
+        this.start = res.data.pageNum
         this.busy = false
         this.$refs.result.scrollTop = 0
       })
     },
     nextData () {
-      var start = this.data.length
-      this.$postJsonReq('/api/export/list/' + start + '/' + this.limit, {
-        excelStatus: this.status,
-        exportName: this.exportName
-      }).then(res => {
-        if (!res.data.length) {
+      var start = this.start + 1
+      this.$postJsonReq('/api/mysql-data/logPage/' + this.limit + '/' + start, this.param).then(res => {
+        if (!res.data.list.length) {
           this.busy = true
           return
         }
-
-        this.data = this.data.concat(res.data)
+        console.log(res.data.pageNum)
+        this.start = res.data.pageNum
+        this.data = this.data.concat(res.data.list)
       })
     },
     downloadPath (item) {

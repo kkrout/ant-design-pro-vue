@@ -186,7 +186,9 @@ export default {
       this.tabKey = '2'
       this.$nextTick(() => {
         !this.sqlEditor && this.initEditor()
+        this.setSql('')
       })
+      this.current = 0
     },
     initEditor () {
       var that = this
@@ -206,9 +208,8 @@ export default {
         }
         // hintOptions: { tables: tableFields }
       })
-      var height = $(document).height() - 430
+      var height = $(document).height() - 390
       this.sqlEditor.setSize(null, height)
-      console.log(this.sqlEditor)
     },
     parseParam () {
       var sql = this.sqlEditor.getValue()
@@ -221,23 +222,43 @@ export default {
         if (fields.includes(item)) {
           return
         }
+        var key = this.getMd5Code(item)
         var paramKvs = param.split('=')
         fields.push(item)
-        coondi.push({
-          key: this.getMd5Code(item),
+
+        var replaceParam = this.replaceParam(key)
+
+        var row = replaceParam || {
+          key: key,
           name: item,
           showName: paramKvs[1] || '',
           field: paramKvs[0],
           operator: '=',
           paramType: 'text',
           kvList: []
-        })
+        }
+
+        coondi.push(row)
       })
       this.config.coonditionJson = coondi
 
       this.current = 1
     },
+    replaceParam (key) {
+      var json = this.config.coonditionJson
+      if (json) {
+        for (var i = 0, item; item = json[i++];) {
+          if (item.key === key) {
+            return item
+          }
+        }
+      }
+    },
     produceSql () {
+      if (!this.config.sourceCode) {
+        this.$message.error('请选择分组')
+        return
+      }
       var sql = this.sqlEditor.getValue()
       this.config.script = sql
       var fields = []
@@ -245,12 +266,23 @@ export default {
         res.data.fields.forEach(item => {
           fields.push({
             name: item,
-            display: item
+            display: this.replaceField(item)
           })
         })
         this.current = 2
         this.config.fieldJson = fields
       })
+    },
+    replaceField (field) {
+      var json = this.config.fieldJson
+      if (json) {
+        for (var i = 0, item; item = json[i++];) {
+          if (item.name === field) {
+            return item.display
+          }
+        }
+      }
+      return field
     },
     finsh () {
       this.config.group = this.openKeys[0]
@@ -268,6 +300,7 @@ export default {
           this.loadGroup(this.config.group)
           this.selectKeys = []
           this.config = null
+          this.sqlEditor = null
           this.tabKey = '1'
         })
     },
@@ -305,6 +338,7 @@ export default {
       this.$getReq('/api/business-report/get/' + key).then(res => {
         this.config = res.data
         this.paramData = {}
+        this.current = 0
         this.setSql(this.config.script)
       })
     },
@@ -342,13 +376,13 @@ export default {
 
 <style scoped>
   .tab-body{
-    height:calc(100vh - 340px);
+    height:calc(100vh - 300px);
     padding-top:20px;
     overflow: auto;
   }
   .left-menu{
     width: 100%;
-    height:calc(100vh - 250px);
+    height:calc(100vh - 180px);
     overflow-y: auto;
     overflow-x: hidden;
   }

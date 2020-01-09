@@ -1,12 +1,12 @@
 <template>
   <div>
-    <a-tooltip placement="left" style="position: fixed;right: 20px;top:130px;z-index: 10;">
+    <a-tooltip placement="left" style="position: fixed;right: 20px;top:80px;z-index: 10;">
       <template slot="title">
         <span>数据库信息</span>
       </template>
       <a-button type="primary" style="margin-right:5px;" @click="tableOption" icon="info-circle" ></a-button>
     </a-tooltip>
-    <a-tooltip placement="left" style="position: fixed;right: 20px;top:170px;z-index: 10;" >
+    <a-tooltip placement="left" style="position: fixed;right: 20px;top:120px;z-index: 10;" >
       <template slot="title">
         <span>表信息</span>
       </template>
@@ -21,7 +21,7 @@
           </div>
           <a-menu
             ref="menu"
-            style="width: 100%;height:calc(100vh - 180px);overflow-y: auto;overflow-x: hidden;"
+            style="width: 100%;height:calc(100vh - 130px);overflow-y: auto;overflow-x: hidden;"
             :openKeys.sync="openKeys"
             v-model="selectKeys"
             mode="inline"

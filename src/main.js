@@ -22,11 +22,13 @@ import './index.less'
 import axios from 'axios'
 import { Message } from 'ant-design-vue'
 import { post, postJson, get, del, put, upload } from './api/request'
+import InfiniteScroll from 'vue-infinite-scroll'
 
 Vue.config.productionTip = false
 
 // mount axios Vue.$http and this.$http
 Vue.use(VueAxios)
+InfiniteScroll.install(Vue)
 
 new Vue({
   router,
@@ -67,10 +69,18 @@ axios.interceptors.response.use(data => {
 
   return data.data
 }, err => {
+  var status = err.response.status
+
   if (!isWhiteList(err.config.url)) {
+    if (status === 401) {
+      Message.error('登录超时，请重新登录')
+      store.dispatch('Logout').then(() => {
+        window.location.href = '/user/login?redirect=' + window.location.pathname + window.location.search
+      })
+      return
+    }
     return Promise.reject(err)
   }
-  var status = err.response.status
   switch (status) {
     case 401:
       Message.error('登录超时，请重新登录')

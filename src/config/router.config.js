@@ -82,19 +82,10 @@ export const asyncRouterMap = [
       //   ]
       // },
       {
-        path: '/datamgr/log',
+        path: '/datamgr/log/query',
         name: 'Logs',
-        redirect: '/datamgr/log/mysql',
-        component: RouteView,
-        meta: { title: '日志跟踪', keepAlive: true, icon: bxAnaalyse, permission: [ 'datamgr' ] },
-        children: [
-          {
-            path: 'mysql',
-            name: 'LogMysql',
-            component: () => import('@/views/datamgr/Redis'),
-            meta: { title: 'Mysql日志', keepAlive: true, permission: [ 'datamgr' ] }
-          }
-        ]
+        component: () => import('@/views/datamgr/LogQuery'),
+        meta: { title: '日志跟踪', keepAlive: true, icon: bxAnaalyse, permission: [ 'datamgr' ] }
       },
       // dashboard
       {
@@ -484,7 +475,7 @@ export const constantRouterMap = [
         path: '',
         name: 'Export',
         component: () => import('@/views/datamgr/Export'),
-        meta: { title: '我的导出', keepAlive: true, permission: [ 'datamgr' ] },
+        meta: { title: '我的导出', keepAlive: false, permission: [ 'datamgr' ] },
         props: true
       }
     ]

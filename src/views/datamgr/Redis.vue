@@ -17,7 +17,7 @@
         <a-col :span="5">
           <a-menu
             ref="menu"
-            style="width: 100%;height:calc(100vh - 180px);overflow-y: auto;overflow-x: hidden;"
+            style="width: 100%;height:calc(100vh - 110px);overflow-y: auto;overflow-x: hidden;"
             :openKeys.sync="openKeys"
             v-model="selectKeys"
             mode="inline"
