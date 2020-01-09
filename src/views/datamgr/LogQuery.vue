@@ -61,6 +61,10 @@
                 <a-tag v-else > 其他类型：{{ item.sqlType }}</a-tag>
               </div>
               <div class="list-content-item">
+                <span>创建人</span>
+                <p>{{ item.createBy }}</p>
+              </div>
+              <div class="list-content-item">
                 <span>创建时间</span>
                 <p>{{ item.createTime }}</p>
               </div>
