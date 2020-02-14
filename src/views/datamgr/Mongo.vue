@@ -15,7 +15,9 @@
             <a-sub-menu v-for="item in databaseList" :key="item.sourceCode" >
               <span slot="title" :style="{color:openKeys.includes(item.sourceCode) ? 'red' : '' }"><a-icon type="database" /><span>{{ item.sourceCode }}</span></span>
               <template v-if="item.children">
-                <a-menu-item v-for="sub in item.children" :key="sub.label">{{ sub.label }}</a-menu-item>
+                <a-menu-item v-for="sub in item.children" :key="sub.label">
+                  <span :title="sub.label">{{ sub.label }}</span>
+                </a-menu-item>
               </template>
             </a-sub-menu>
           </a-menu>
