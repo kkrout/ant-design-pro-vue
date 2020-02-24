@@ -9,18 +9,21 @@
           <a-tooltip class="item" effect="dark" content="Ctrl+D" placement="bottom">
             <a-button size="small" type="primary" @click="exportSql" >后台导出</a-button>
           </a-tooltip>
+          <a-tooltip class="item" effect="dark" content="Ctrl+D" placement="bottom">
+            <a-button size="small" @click="toMyExport" >我的导出</a-button>
+          </a-tooltip>
           <!--<el-button size="mini" type="primary" >保存</el-button>-->
           <a-tooltip class="item" effect="dark" content="Ctrl+M" placement="bottom">
-            <a-button size="small" type="success" @click="formatSql" >美化</a-button>
+            <a-button size="small" @click="formatSql" >美化</a-button>
           </a-tooltip>
           <a-tooltip class="item" effect="dark" content="Ctrl+B" placement="bottom">
-            <a-button size="small" type="info" @click="showResult=!showResult">
+            <a-button size="small" @click="showResult=!showResult">
               {{ showResult?"关闭":"打开" }}结果</a-button>
           </a-tooltip>
           <a-tooltip class="item" effect="dark" content="Alt+H" placement="bottom">
-            <a-button size="small" type="info" @click="queryHistory">执行历史</a-button>
+            <a-button size="small" @click="queryHistory">执行历史</a-button>
           </a-tooltip>
-          <a-button size="small" type="warning" @click="tipsDialog=true" >帮助说明</a-button>
+          <a-button size="small" @click="tipsDialog=true" >帮助说明</a-button>
         </a-button-group>
         <span style="margin-left:10px;margin-top:5px;">
           <a-checkbox @change="autoLine" v-model="lineWrapping" >自动换行</a-checkbox>
@@ -406,6 +409,9 @@ export default {
           }
         })
       })
+    },
+    toMyExport () {
+      window.open('/export')
     }
   },
   /* 组件创建完成事件  */

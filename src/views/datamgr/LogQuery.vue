@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card title="我的导出列表">
+    <a-card title="日志列表">
       <div slot="extra">
         <a-radio-group v-model="param.sqlType" @change="query">
           <a-radio-button :value="null">全部</a-radio-button>
