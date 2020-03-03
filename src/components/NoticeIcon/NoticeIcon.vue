@@ -72,6 +72,13 @@ export default {
       messageList: []
     }
   },
+  watch: {
+    $route: {
+      handler: function (val, oldVal) {
+        this.noReadCount()
+      }
+    }
+  },
   mounted () {
     this.noReadCount()
   },
@@ -84,7 +91,7 @@ export default {
     noReadCount () {
       this.$post('/api/message/noread-count').then(res => {
         this.messageCount = res.data
-        setTimeout(this.noReadCount, 5000)
+        // setTimeout(this.noReadCount, 5000)
       })
     },
     downloadFile (item, index) {
