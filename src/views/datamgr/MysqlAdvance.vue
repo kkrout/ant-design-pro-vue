@@ -192,7 +192,8 @@ export default {
     },
     showResult (v) {
       if (v) {
-        const height = $(document).height() - 440
+        // 如果是查询的
+        const height = $(document).height() - 500
         this.sqlEditor.setSize(null, height)
       } else {
         const height = $(document).height() - 100
