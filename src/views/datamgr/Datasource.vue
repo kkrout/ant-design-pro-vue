@@ -190,9 +190,14 @@ export default {
     parseConnet () {
       var v = this.form.connect
       var startStr = 'jdbc:mysql://'
+      var startStr1 = 'mongodb://'
+
       if (v.indexOf(startStr) === 0) {
         this.form.type = 'mysql'
         this.parseMysql(v)
+      } else if (v.indexOf(startStr1) === 0) {
+        this.form.type = 'mongo'
+        this.parseMongo(v)
       }
     },
     parseMysql (v) {
@@ -209,6 +214,31 @@ export default {
         const url = v.substring(startStr2.length)
         this.$set(this.form.config, 'address', url)
       }
+    },
+    parseMongo (v) {
+      var startStr = 'mongodb://'
+      // 用户密码
+      var upEnd = v.indexOf('@', startStr.length)
+      var upStr = v.substring(startStr.length, upEnd)
+      var user = upStr.split(':')[0]
+      var pwd = upStr.split(':')[1]
+      this.$set(this.form.config, 'username', user)
+      this.$set(this.form.config, 'password', pwd)
+
+      // 地址end
+      var addressEnd = v.indexOf('/', upEnd)
+      var address = v.substring(upEnd + 1, addressEnd)
+      this.$set(this.form.config, 'address', address.split(',')[0])
+
+      // db end
+      var dbEnd = v.indexOf('?', addressEnd)
+      var dbStr
+      if (dbEnd !== -1) {
+        dbStr = v.substring(addressEnd + 1, dbEnd)
+      } else {
+        dbStr = v.substring(addressEnd + 1)
+      }
+      this.$set(this.form.config, 'database', dbStr)
     },
     typeFilterHandler (value, row, column) {
       var property = column['property']
