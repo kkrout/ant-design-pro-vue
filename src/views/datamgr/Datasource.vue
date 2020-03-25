@@ -12,9 +12,21 @@
         @click="openAdd"
         icon="plus" ></a-button>
     </a-tooltip>
-    <a-card>
-      <a-list size="large" :showPagination="false">
-        <a-list-item :key="index" v-for="(item, index) in data">
+    <a-card title="数据源列表">
+      <div slot="extra">
+        <a-radio-group v-model="sourceType" @change="onSearch">
+          <a-radio-button value="">全部</a-radio-button>
+          <a-radio-button value="mysql">mysql</a-radio-button>
+          <a-radio-button value="redis">redis</a-radio-button>
+          <a-radio-button value="mongo">mongo</a-radio-button>
+        </a-radio-group>
+        <a-input-search @change="onSearch" v-model="keyword" style="margin-left: 16px; width: 272px;" />
+      </div>
+      <a-list
+        size="large"
+        style="height: calc(100vh - 200px);overflow-y: auto;"
+        :showPagination="false">
+        <a-list-item :key="item.sourceCode" v-for="item in showData">
           <a-list-item-meta :description="item.connect">
             <template slot="title">
               <a style="margin-right:10px;">{{ item.sourceName }}</a>
@@ -115,6 +127,7 @@ export default {
   data () {
     return {
       data: [],
+      showData: [],
       selectedRowKeys: [],
       options: {
         alert: { show: false, clear: () => { this.selectedRowKeys = [] } },
@@ -123,6 +136,8 @@ export default {
           onChange: this.onSelectChange
         }
       },
+      keyword: '',
+      sourceType: '',
       editDrawer: false,
       form: {
         sourceCode: '',
@@ -141,6 +156,9 @@ export default {
     query () {
       this.$getReq('/api/datasource/list/').then(res => {
         this.data = res.data
+        this.showData = this.data
+        this.keyword = ''
+        this.sourceType = ''
       })
     },
     openAdd () {
@@ -264,6 +282,14 @@ export default {
       this.$postJsonReq('/api/datasource/add', data).then(res => {
         this.editDrawer = false
         this.query()
+      })
+    },
+    onSearch () {
+      this.showData = this.data.filter(item => {
+        var b = item.sourceCode.includes(this.keyword) ||
+                item.sourceName.includes(this.keyword) ||
+                item.connect.includes(this.keyword)
+        return b && (item.type === this.sourceType || !this.sourceType)
       })
     }
   }

@@ -12,9 +12,15 @@
         @click="openAdd"
         icon="plus" ></a-button>
     </a-tooltip>
-    <a-card>
-      <a-list size="large" :showPagination="false">
-        <a-list-item :key="index" v-for="(item, index) in tableData">
+    <a-card title="权限人员列表">
+      <div slot="extra">
+        <a-input-search @change="onSearch" v-model="keyword" style="margin-left: 16px; width: 272px;" />
+      </div>
+      <a-list
+        size="large"
+        style="height: calc(100vh - 200px);overflow-y: auto;"
+        :showPagination="false">
+        <a-list-item :key="item.id" v-for="item in showData">
           <a-list-item-meta>
             <a slot="title">{{ item.loginName }}</a>
             <div slot="description">
@@ -53,7 +59,7 @@
           :columns="dataSourceField"
           :rowSelection="{selectedRowKeys:selectList,onChange:onSelectChange}"
           :pagination="false" >
-          <template slot="right" slot-scope="text, record, index">
+          <template slot="right" slot-scope="text, record, index" >
             <a-checkbox v-model="grantDatabase[record.sourceCode]" @change="grantBoxChange($event,record)" ></a-checkbox>
           </template>
         </a-table>
@@ -75,6 +81,7 @@ export default {
     return {
       keyword: '',
       tableData: [],
+      showData: [],
       addDrawer: false,
       dataSourceData: [],
       dataSourceField: [
@@ -105,6 +112,8 @@ export default {
     query () {
       this.$getReq('/api/right/list').then(res => {
         this.tableData = res.data
+        this.showData = this.tableData
+        this.keyword = ''
       })
     },
     onSelectChange (selectList, selectedRows) {
@@ -185,6 +194,15 @@ export default {
     },
     splitList (str) {
       return str.split(',')
+    },
+    onSearch () {
+      var list = this.tableData.filter(item => {
+        var b = item.loginName.includes(this.keyword) ||
+              item.databases.includes(this.keyword) ||
+              item.grant.includes(this.keyword)
+        return b
+      })
+      this.showData = list
     }
   },
   /* 组件创建完成事件  */

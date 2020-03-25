@@ -50,6 +50,7 @@
       title="详情"
       :width="700"
       :visible="detailModel"
+      :mask="false"
       @close="detailModel=false">
       <div style="padding: 8px 0px;">
         <a-input
@@ -148,7 +149,7 @@ export default {
           case 'set':
             cols.push('value')
             res.data.forEach(item => {
-              list.push(item.value)
+              list.push([item.value])
             })
             break
           case 'zset':
@@ -182,20 +183,21 @@ export default {
     },
     loadExcel (cols, list) {
       var height = $(document).height()
-      var columns = []; var colWidths = []
+      var columns = []
+      var colWidths = []
       cols.forEach(item => {
         columns.push({ type: 'text', title: item })
-        colWidths.push(600 / cols.length)
+        colWidths.push(590 / cols.length)
       })
 
       var option2 = {
         data: list,
-        columns: columns,
+        columns: [{ type: 'text', title: 'value' }],
         tableHeight: (height - 300) + 'px',
         tableOverflow: true,
         search: true,
         csvFileName: '导出数据',
-        tableWidth: 700 + 'px',
+        tableWidth: 650 + 'px',
         colWidths: colWidths,
         colAlignments: ['left', 'left', 'center'],
         allowComments: false,
@@ -261,10 +263,11 @@ export default {
             pagination: 2000,
             paginationOptions: [2000, 5000, 10000],
             rowResize: true,
-            ondbclick: function (data) {
-              console.log(that.currentData)
-              if (that.currentData.key === data[0]) { return }
-              that.currentData = { key: data[0], value: data[1], type: data[2] }
+            onselection: function (el, x, y) {
+              if (x > 0) return
+              var list = that.$refs.excelResult.spreadsheet.getData()
+              var row = list[y]
+              that.currentData = { key: row[0], value: row[1], type: row[2] }
               that.querySubkeys()
             }
           }
